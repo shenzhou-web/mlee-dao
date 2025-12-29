@@ -47,9 +47,8 @@ export default function Home() {
     <main className="bg-gradient-to-b from-black via-zinc-950 to-black text-white overflow-x-hidden">
       {/* Navbar */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? "bg-black/80 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-black/80 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
@@ -222,7 +221,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="text-center sm:text-left">
-                  <h3 className="text-lg sm:text-xl font-bold text-white mb-1">Muhammad Dawood</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-1">Maike Lee</h3>
                   <p className="text-sm text-emerald-400 font-medium mb-2">Founder & Lead Developer</p>
                   <p className="text-sm text-gray-400 leading-relaxed">
                     Blockchain enthusiast building transparent, community-driven solutions on BNB Chain
@@ -244,7 +243,7 @@ export default function Home() {
               size="lg"
               variant="outline"
               onClick={() => scrollToSection("links")}
-              className="border-2 border-emerald-400/50 text-white hover:bg-emerald-400/10 hover:border-emerald-400 hover:scale-105 font-semibold text-base sm:text-lg px-8 py-6 transition-all w-full sm:w-auto"
+              className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-blue-500 text-black font-bold text-base sm:text-lg px-8 py-6 hover:shadow-lg hover:shadow-emerald-500/25 hover:scale-105 transition-all w-full sm:w-auto"
             >
               Join Community
             </Button>
@@ -283,8 +282,8 @@ export default function Home() {
                 <Check className="w-6 h-6 text-emerald-400" />
               </div>
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-2">Contract Verified ✓</h3>
-                <p className="text-gray-400 text-sm sm:text-base">
+                <h3 className="text-xl sm:text-2xl font-bold mb-2 text-white">Contract Verified ✓</h3>
+                <p className="text-gray-200 text-sm sm:text-base">
                   Audited and verified on BscScan. Fully transparent and open-source.
                 </p>
               </div>
@@ -493,23 +492,21 @@ export default function Home() {
             ].map((item, index) => (
               <Card
                 key={index}
-                className={`p-6 sm:p-8 border-white/10 backdrop-blur-sm transition-all hover:scale-[1.02] ${
-                  item.status === "completed"
-                    ? "bg-emerald-500/10 border-emerald-500/30"
-                    : item.status === "in-progress"
-                      ? "bg-cyan-500/10 border-cyan-500/30"
-                      : "bg-white/5"
-                }`}
+                className={`p-6 sm:p-8 border-white/10 backdrop-blur-sm transition-all hover:scale-[1.02] ${item.status === "completed"
+                  ? "bg-emerald-500/10 border-emerald-500/30"
+                  : item.status === "in-progress"
+                    ? "bg-cyan-500/10 border-cyan-500/30"
+                    : "bg-white/5"
+                  }`}
               >
                 <div className="flex items-start gap-4 sm:gap-6">
                   <div
-                    className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-lg sm:text-xl ${
-                      item.status === "completed"
-                        ? "bg-gradient-to-br from-emerald-400 to-cyan-400 text-black"
-                        : item.status === "in-progress"
-                          ? "bg-gradient-to-br from-cyan-400 to-blue-400 text-black"
-                          : "bg-white/10 text-gray-400"
-                    }`}
+                    className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-lg sm:text-xl ${item.status === "completed"
+                      ? "bg-gradient-to-br from-emerald-400 to-cyan-400 text-black"
+                      : item.status === "in-progress"
+                        ? "bg-gradient-to-br from-cyan-400 to-blue-400 text-black"
+                        : "bg-white/10 text-gray-400"
+                      }`}
                   >
                     {item.status === "completed" ? "✓" : index + 1}
                   </div>
@@ -568,24 +565,24 @@ export default function Home() {
 
           <div className="grid sm:grid-cols-2 gap-6">
             {[
-              { name: "Website", url: "https://mleedao.com", icon: "🌐" },
               { name: "Telegram", url: "https://t.me/MleeDAO", icon: "💬" },
               { name: "X (Twitter)", url: "https://x.com/MLEEDAO", icon: "𝕏" },
-              { name: "GitHub", url: "https://github.com/yourrepo", icon: "💻" },
-              { name: "Whitepaper", url: "/whitepaper.pdf", icon: "📄" },
-              { name: "Email", url: "mailto:admin@mleedao.com", icon: "✉️" },
+              { name: "GitHub", url: "https://github.com/shenzhou-web/mlee-dao", icon: "💻" },
+              { name: "Insight", url: "https://i.ifeng.com/c/8SfiNLd8r3c", icon: "🔍" },
             ].map((link, index) => (
               <Card
                 key={index}
                 onClick={() => window.open(link.url, "_blank")}
-                className="p-6 bg-white/5 backdrop-blur-sm border-white/10 hover:border-emerald-500/30 hover:bg-white/10 transition-all cursor-pointer group"
+                className="p-6 bg-transparent backdrop-blur-sm border-white/10 hover:border-emerald-500/30 hover:bg-emerald-500/10 transition-all cursor-pointer group"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
                       {link.icon}
                     </div>
-                    <span className="font-semibold text-lg">{link.name}</span>
+                    <span className="font-semibold text-lg text-emerald-500 group-hover:text-white">
+                      {link.name}
+                    </span>
                   </div>
                   <ExternalLink className="w-5 h-5 text-gray-400 group-hover:text-emerald-400 transition-colors" />
                 </div>
@@ -594,6 +591,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+
 
       {/* Contact & Resources Section */}
       <section id="contact" className="py-20 px-4 sm:px-6 relative">
@@ -646,16 +644,10 @@ export default function Home() {
                 <h3 className="text-lg sm:text-xl font-bold mb-2 text-white">Official Website</h3>
                 <p className="text-emerald-400 text-sm sm:text-base font-mono">{officialWebsite}</p>
               </div>
-              <Button
-                onClick={() => window.open(officialWebsite, "_blank")}
-                variant="outline"
-                className="border-emerald-500/30 hover:bg-emerald-500/10 text-white hover:text-white"
-              >
-                <span>Visit</span>
-                <ExternalLink className="w-4 h-4 ml-2" />
-              </Button>
+
             </div>
           </Card>
+
 
           {/* Additional Resources */}
           <div className="grid sm:grid-cols-2 gap-6">
@@ -665,21 +657,25 @@ export default function Home() {
                   <Download className="w-6 h-6 text-cyan-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold mb-2 text-white">Documentation</h3>
-                  <p className="text-sm text-gray-400 mb-4">Download our whitepaper and technical documentation</p>
+                  <h3 className="text-lg font-bold mb-2 text-white">Whitepaper</h3>
+                  <p className="text-sm text-gray-400 mb-4">You can view our white paper by downloading it. </p>
                   <Button
                     variant="outline"
                     size="sm"
                     className="border-cyan-500/30 hover:bg-cyan-500/10 text-white hover:text-white bg-transparent"
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    Download Docs
+                    <a href="/whitepaper.pdf" download className="flex items-center">
+                      Download Whitepaper
+                    </a>
                   </Button>
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 bg-white/5 backdrop-blur-sm border-white/10 hover:border-emerald-500/30 transition-all">
+
+
+            <Card className="p-6 bg-transparent backdrop-blur-sm border-white/10 hover:border-emerald-500/30 transition-all">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 flex items-center justify-center flex-shrink-0">
                   <ExternalLink className="w-6 h-6 text-emerald-400" />
@@ -692,7 +688,7 @@ export default function Home() {
                       variant="outline"
                       size="sm"
                       onClick={() => window.open("https://t.me/MleeDAO", "_blank")}
-                      className="border-emerald-500/30 hover:bg-emerald-500/10 text-white hover:text-white"
+                      className="border-emerald-500 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 hover:text-white hover:shadow-lg hover:shadow-emerald-500/25"
                     >
                       Telegram
                     </Button>
@@ -700,7 +696,7 @@ export default function Home() {
                       variant="outline"
                       size="sm"
                       onClick={() => window.open("https://x.com/MLEEDAO", "_blank")}
-                      className="border-emerald-500/30 hover:bg-emerald-500/10 text-white hover:text-white"
+                      className="border-emerald-500 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 hover:text-white hover:shadow-lg hover:shadow-emerald-500/25"
                     >
                       X/Twitter
                     </Button>
@@ -708,6 +704,7 @@ export default function Home() {
                 </div>
               </div>
             </Card>
+
           </div>
         </div>
       </section>
@@ -717,9 +714,8 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 via-cyan-400 to-blue-500 rounded-lg flex items-center justify-center font-bold text-black">
-                M
-              </div>
+              {/* Logo without background */}
+              <img src="/logo.svg" alt="MLEE DAO Logo" className="w-12 h-12 object-contain" />
               <span className="text-xl font-bold">MLEE DAO</span>
             </div>
             <div className="text-center md:text-right">
