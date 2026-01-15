@@ -1,8 +1,11 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
+import { WagmiProvider } from "wagmi"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { wagmiConfig } from "@/lib/wagmi"
+import Web3Providers from "@/components/web3Providers"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -30,17 +33,20 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
 }
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+const queryClient = new QueryClient()
+
+  
   return (
     <html lang="en">
       <body className={`font-sans antialiased`}>
+      <Web3Providers>
         {children}
-        <Analytics />
+      </Web3Providers>
       </body>
     </html>
   )
