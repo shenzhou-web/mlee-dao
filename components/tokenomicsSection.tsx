@@ -16,12 +16,12 @@ export default function TokenomicsSection() {
     { name: 'Strategic Reserves', value: 5, tokens: '50,000,000', color: '#6bc4ad' }
   ];
 
-  const keyMetrics = [
-    { icon: Coins, label: 'Total Supply', value: '1,000,000,000', subtitle: 'MDAO tokens (Fixed)' },
-    { icon: TrendingUp, label: 'Initial Circulation', value: '100,000,000', subtitle: '10% of total supply' },
-    { icon: Shield, label: 'Tax Structure', value: '0%', subtitle: 'No buy/sell taxes' },
-    { icon: Database, label: 'Token Standard', value: 'BEP-20', subtitle: 'BNB Smart Chain' }
-  ];
+const keyMetrics = [
+  { icon: Coins, label: 'Total Supply', value: '1B', subtitle: 'MDAO tokens (Fixed)' },
+  { icon: TrendingUp, label: 'Initial Circulation', value: '100M', subtitle: '10% of total supply' },
+  { icon: Shield, label: 'Tax Structure', value: '0%', subtitle: 'No buy/sell taxes' },
+  { icon: Database, label: 'Token Standard', value: 'BEP-20', subtitle: 'BNB Smart Chain' }
+];
 
   const tokenInfo = [
     { label: 'Token Name', value: 'MLEE DAO' },
