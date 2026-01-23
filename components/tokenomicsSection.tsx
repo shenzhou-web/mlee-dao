@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { Shield, Lock, Users, Coins, TrendingUp, Database, ExternalLink, CheckCircle } from 'lucide-react';
@@ -7,6 +9,12 @@ const Card: React.FC<{ className?: string; children?: React.ReactNode }> = ({ cl
 );
 
 export default function TokenomicsSection() {
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const allocationData = [
     { name: 'Ecosystem Treasury', value: 40, tokens: '7,200,000,000', color: '#dba640' },
     { name: 'Corporate Incentives', value: 20, tokens: '3,600,000,000', color: '#5cb89f' },
@@ -132,7 +140,7 @@ export default function TokenomicsSection() {
                   cy="50%"
                   labelLine={false}
                   label={renderCustomLabel}
-                  outerRadius={window.innerWidth < 640 ? 80 : 120}
+                  outerRadius={isMounted && typeof window !== 'undefined' && window.innerWidth < 640 ? 80 : 120}
                   fill="#8884d8"
                   dataKey="value"
                 >
