@@ -92,12 +92,12 @@ export default function Home() {
                 >
                   Referral
                 </Link> */}
-                <button
+                {/* <button
                   onClick={() => scrollToSection("governance")}
                   className="px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-smooth"
                 >
                   Governance
-                </button>
+                </button> */}
                 <button
                   onClick={() => scrollToSection("tokenomics")}
                   className="px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-smooth"
@@ -173,12 +173,12 @@ export default function Home() {
               >
                 Referral
               </Link> */}
-              <button
+              {/* <button
                 onClick={() => scrollToSection("governance")}
                 className="block w-full text-left px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all"
               >
                 Governance
-              </button>
+              </button> */}
               <button
                 onClick={() => scrollToSection("tokenomics")}
                 className="block w-full text-left px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all"
