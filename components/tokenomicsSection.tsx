@@ -94,7 +94,7 @@ export default function TokenomicsSection() {
         {/* BscScan Verification Button */}
         <div className="flex justify-center mb-12">
           <a 
-            href="https://bscscan.com/token/YOUR_CONTRACT_ADDRESS" 
+            href="https://bscscan.com/token/0xC4bF2518AA953304170753388F83277Eb9588a7A" 
             target="_blank" 
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-bold px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-yellow-500/50 hover:scale-105"
