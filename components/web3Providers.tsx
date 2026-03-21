@@ -17,7 +17,7 @@ export default function Web3Providers({
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider chains={wagmiChains}>
+        <RainbowKitProvider>
           {children}
           <Analytics />
         </RainbowKitProvider>

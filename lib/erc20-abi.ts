@@ -8,7 +8,7 @@ export const ERC20_ABI = [
     stateMutability: "nonpayable",
     inputs: [
       { name: "spender", type: "address" },
-      { name: "amount",  type: "uint256" },
+      { name: "amount", type: "uint256" },
     ],
     outputs: [{ name: "", type: "bool" }],
   },
@@ -17,7 +17,7 @@ export const ERC20_ABI = [
     type: "function",
     stateMutability: "view",
     inputs: [
-      { name: "owner",   type: "address" },
+      { name: "owner", type: "address" },
       { name: "spender", type: "address" },
     ],
     outputs: [{ name: "", type: "uint256" }],
@@ -48,9 +48,9 @@ export const ERC20_ABI = [
     type: "event",
     anonymous: false,
     inputs: [
-      { name: "owner",   type: "address", indexed: true  },
-      { name: "spender", type: "address", indexed: true  },
-      { name: "value",   type: "uint256", indexed: false },
+      { name: "owner", type: "address", indexed: true },
+      { name: "spender", type: "address", indexed: true },
+      { name: "value", type: "uint256", indexed: false },
     ],
   },
-] as const
+] as const;

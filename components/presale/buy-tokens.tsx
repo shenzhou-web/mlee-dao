@@ -225,7 +225,7 @@ export function BuyTokens() {
 
       {/* Approve tx hash link */}
       {approveTxHash && step === "approved" && (
-        <a href={getTxLink(approveTxHash, isTestnet)} target="_blank" rel="noopener noreferrer"
+        <a href={getTxLink(approveTxHash, false)} target="_blank" rel="noopener noreferrer"
           className="block text-center text-xs py-1"
           style={{ color: "rgba(46,216,163,0.6)", fontFamily: "'Rajdhani', sans-serif" }}>
           ✓ Approval confirmed — View on BscScan ↗
