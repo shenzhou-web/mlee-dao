@@ -2,9 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
-import { WagmiProvider } from "wagmi"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { wagmiConfig } from "@/lib/wagmi"
+import "@rainbow-me/rainbowkit/styles.css"
 import Web3Providers from "@/components/web3Providers"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -38,9 +36,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-const queryClient = new QueryClient()
-
-  
   return (
     <html lang="en">
       <body className={`font-sans antialiased`}>

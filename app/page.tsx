@@ -9,16 +9,35 @@ import Image from "next/image"
 import { FloatingCTA } from "@/components/layout/floating-cta"
 import { MDAOCountdown } from "@/components/countdown"
 import TokenomicsSection from "@/components/tokenomicsSection"
+import { usePresaleData } from "@/hooks/usePresaleData"
+import { CONTRACTS } from "@/lib/contracts"
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false)
   const [copied, setCopied] = useState(false)
   const [emailCopied, setEmailCopied] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { priceDisplay, progress, presaleEndTimestamp, phase1Start, phase, isLoading } = usePresaleData()
 
   const contractAddress = "0xC4bF2518AA953304170753388F83277Eb9588a7A"
   const officialEmail = "admin@mleedao.com"
   const officialWebsite = "https://mleedao.com"
+
+  const now = Date.now() / 1000
+  const hasStarted = phase1Start > 0 && now >= phase1Start
+  const hasEnded = presaleEndTimestamp > 0 && now >= presaleEndTimestamp
+  const phaseBadge = hasEnded
+    ? "Presale Ended"
+    : hasStarted
+      ? `Phase ${phase || 1} Live`
+      : "Phase 1 Starting Soon"
+  const targetTime = hasStarted ? presaleEndTimestamp : phase1Start
+  const daysLeft = targetTime > 0 ? Math.max(0, Math.ceil((targetTime - now) / 86400)) : 0
+  const timingLabel = hasEnded
+    ? "Presale ended"
+    : hasStarted
+      ? `Presale ends in ${daysLeft} days`
+      : `Presale starts in ${daysLeft} days`
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,9 +73,8 @@ export default function Home() {
 
       {/* Navbar */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? "bg-black/80 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-black/80 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
@@ -74,13 +92,13 @@ export default function Home() {
                 >
                   About
                 </button>
-                {/* <Link
+                <Link
                   href="/presale"
                   className="px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-smooth"
                 >
                   Presale
                 </Link>
-                <Link
+                {/* <Link
                   href="/airdrop"
                   className="px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-smooth"
                 >
@@ -155,13 +173,13 @@ export default function Home() {
               >
                 About
               </button>
-              {/* <Link
+              <Link
                 href="/presale"
                 className="block w-full text-left px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all"
               >
                 Presale
               </Link>
-              <Link
+              {/* <Link
                 href="/airdrop"
                 className="block w-full text-left px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all"
               >
@@ -215,90 +233,189 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 pt-20">
-        {/* Animated Background Grid */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_40%,transparent_100%)]" />
+  {/* Hero Section */}
+<section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 pt-20">
+  {/* Animated Background Grid */}
+  <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_40%,transparent_100%)]" />
+  </div>
+
+  {/* Orbs */}
+  <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#dba640]/10 rounded-full blur-3xl animate-pulse" />
+  <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-700" />
+  {/* Extra presale-focused orb */}
+  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#dba640]/5 rounded-full blur-3xl pointer-events-none" />
+
+  <div className="relative max-w-5xl mx-auto text-center z-10">
+
+    {/* Verified badge */}
+    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 animate-fade-in">
+      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+      <span className="text-sm font-medium text-primary">Contract Verified on BscScan</span>
+    </div>
+
+    {/* Headline */}
+    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 animate-fade-in-up text-balance">
+      <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient">
+        MLEE DAO
+      </span>
+    </h1>
+
+    <p className="text-xl sm:text-2xl md:text-3xl font-semibold mb-6 text-gray-300 animate-fade-in-up delay-100 text-balance">
+      Decentralized Governance Token
+    </p>
+
+    <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-12 animate-fade-in-up delay-200 leading-relaxed text-pretty">
+      A decentralized autonomous organization token on BNB Chain focused on long-term ecosystem development and
+      transparent community ownership.
+    </p>
+
+    {/* ── PRESALE CTA BLOCK ── */}
+    <div className="animate-fade-in-up delay-300">
+      <Link href="/presale">
+        <div
+          className="group relative inline-flex flex-col items-center w-full sm:w-auto cursor-pointer"
+        >
+          {/* Glow ring behind button */}
+          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary via-secondary to-primary opacity-40 blur-lg group-hover:opacity-70 transition-all duration-500 animate-gradient" style={{ backgroundSize: "200% 200%" }} />
+
+          {/* Main CTA card */}
+          <div
+            className="relative w-full sm:w-auto rounded-2xl overflow-hidden transition-transform duration-300 group-hover:-translate-y-1"
+            style={{
+              background: "linear-gradient(135deg, rgba(219,166,64,0.12) 0%, rgba(13,17,23,0.95) 50%, rgba(219,166,64,0.08) 100%)",
+              border: "1px solid rgba(219,166,64,0.35)",
+              boxShadow: "0 0 40px rgba(219,166,64,0.12), inset 0 1px 0 rgba(219,166,64,0.15)",
+            }}
+          >
+            {/* Top shimmer line */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary to-transparent opacity-60" />
+
+            <div className="flex flex-col sm:flex-row items-center gap-6 px-8 py-6 sm:py-5">
+              {/* Left: Live badge + info */}
+              <div className="flex flex-col items-center sm:items-start gap-1 sm:border-r sm:border-white/10 sm:pr-6">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-400" />
+                  </span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-green-400">
+                    {phaseBadge}
+                  </span>
+                </div>
+                <span className="text-[11px] text-gray-500 whitespace-nowrap">{isLoading ? "Loading…" : timingLabel}</span>
+              </div>
+
+              {/* Center: Price */}
+              <div className="flex flex-col items-center sm:items-start sm:border-r sm:border-white/10 sm:pr-6">
+                <span className="text-[11px] uppercase tracking-widest text-gray-500 font-semibold">Current Price</span>
+                <span
+                  className="text-2xl font-bold"
+                  style={{
+                    fontFamily: "'Bebas Neue', sans-serif",
+                    letterSpacing: "0.06em",
+                    color: "#dba640",
+                    textShadow: "0 0 15px rgba(219,166,64,0.5)",
+                  }}
+                >
+                  {isLoading ? "—" : priceDisplay} <span className="text-sm text-gray-400 font-normal">/ MDAO</span>
+                </span>
+              </div>
+
+              {/* Right: Button */}
+              <button
+                className="relative flex items-center gap-3 px-7 py-3.5 rounded-xl font-bold uppercase tracking-wider transition-all duration-300 group-hover:scale-105 overflow-hidden"
+                style={{
+                  background: "linear-gradient(135deg, #dba640 0%, #f5c842 50%, #c88d14 100%)",
+                  backgroundSize: "200% 200%",
+                  animation: "gradient-shift 3s ease infinite",
+                  color: "#05070a",
+                  fontSize: "0.95rem",
+                  letterSpacing: "0.1em",
+                  boxShadow: "0 4px 20px rgba(219,166,64,0.35)",
+                }}
+              >
+                {/* Shine sweep */}
+                <span
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.25) 50%, transparent 60%)",
+                    animation: "progress-shine 2.5s ease-in-out infinite",
+                  }}
+                />
+                <span className="text-lg">🚀</span>
+                Join Presale Now
+                <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Progress bar strip at bottom */}
+            <div className="px-8 pb-4">
+              <div className="flex justify-between items-center mb-1.5">
+                <span className="text-[10px] uppercase tracking-wider text-gray-600 font-semibold">Presale Progress</span>
+                <span className="text-[10px] font-bold" style={{ color: "#dba640" }}>
+                  {isLoading ? "—" : `${progress.toFixed(2)}% Filled`}
+                </span>
+              </div>
+              <div
+                className="h-1.5 rounded-full overflow-hidden"
+                style={{ background: "rgba(219,166,64,0.1)", border: "1px solid rgba(219,166,64,0.1)" }}
+              >
+                <div
+                  className="h-full rounded-full progress-shine"
+                  style={{
+                    width: `${Math.max(progress, 0.5)}%`,
+                    background: "linear-gradient(90deg, #c88d14, #dba640, #f5c842)",
+                    minWidth: "8px",
+                    boxShadow: "0 0 8px rgba(219,166,64,0.6)",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
+      </Link>
 
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#dba640]/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-700" />
+      {/* Sub-note */}
+      <p className="mt-4 text-xs text-gray-600">
+        BEP-20 USDT only &nbsp;·&nbsp; No KYC required &nbsp;·&nbsp;{" "}
+        <a
+          href={`https://bscscan.com/address/${CONTRACTS.PRESALE}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-white transition"
+        >
+          View presale contract
+        </a>
+      </p>
+    </div>
 
-        <div className="relative max-w-5xl mx-auto text-center z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 animate-fade-in">
-            <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-            <span className="text-sm font-medium text-primary">Contract Verified on BscScan</span>
-          </div>
-
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 animate-fade-in-up text-balance">
-            <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient">
-              MLEE DAO
-            </span>
-          </h1>
-
-          <p className="text-xl sm:text-2xl md:text-3xl font-semibold mb-6 text-gray-300 animate-fade-in-up delay-100 text-balance">
-            Decentralized Governance Token
-          </p>
-
-          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-8 animate-fade-in-up delay-200 leading-relaxed text-pretty">
-            A decentralized autonomous organization token on BNB Chain focused on long-term ecosystem development and
-            transparent community ownership.
-          </p>
-{/* 
-          <div className="animate-scale-in delay-300">
-            <MDAOCountdown />
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up delay-500 mt-12">
-            <Link href="/presale">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-primary via-accent to-primary text-black font-bold text-base sm:text-lg px-8 py-6 hover:shadow-lg hover:shadow-primary/25 hover-lift transition-smooth w-full sm:w-auto animate-glow"
-              >
-                Join Presale
-              </Button>
-            </Link>
-            <Link href="/airdrop">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-secondary via-primary to-secondary text-black font-bold text-base sm:text-lg px-8 py-6 hover:shadow-lg hover:shadow-secondary/25 hover-lift transition-smooth w-full sm:w-auto"
-              >
-                Claim Airdrop
-              </Button>
-            </Link>
-            <Link href="/referral">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-accent via-secondary to-accent text-black font-bold text-base sm:text-lg px-8 py-6 hover:shadow-lg hover:shadow-accent/25 hover-lift transition-smooth w-full sm:w-auto"
-              >
-                Get Referral Link
-              </Button>
-            </Link>
-          </div> */}
-
-          {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-20 animate-fade-in-up delay-700">
-            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover-lift hover-glow transition-smooth">
-              <div className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                18B
-              </div>
-              <div className="text-sm sm:text-base text-gray-400 mt-2">Total Supply</div>
-            </div>
-            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover-lift hover-glow transition-smooth">
-              <div className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
-                BEP-20
-              </div>
-              <div className="text-sm sm:text-base text-gray-400 mt-2">Token Standard</div>
-            </div>
-            <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover-lift hover-glow transition-smooth">
-              <div className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                BSC
-              </div>
-              <div className="text-sm sm:text-base text-gray-400 mt-2">BNB Smart Chain</div>
-            </div>
-          </div>
+    {/* Stats */}
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-16 animate-fade-in-up delay-700">
+      <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover-lift hover-glow transition-smooth">
+        <div className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          18B
         </div>
-      </section>
+        <div className="text-sm sm:text-base text-gray-400 mt-2">Total Supply</div>
+      </div>
+      <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover-lift hover-glow transition-smooth">
+        <div className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+          BEP-20
+        </div>
+        <div className="text-sm sm:text-base text-gray-400 mt-2">Token Standard</div>
+      </div>
+      <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover-lift hover-glow transition-smooth">
+        <div className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          BSC
+        </div>
+        <div className="text-sm sm:text-base text-gray-400 mt-2">BNB Smart Chain</div>
+      </div>
+    </div>
+
+  </div>
+</section>
 
       {/* Presale, Airdrop, Referral, Governance Sections */}
       {/* <MDAOPresaleSection /> Removed as it is now a separate page */}
@@ -317,7 +434,7 @@ export default function Home() {
               <div>
                 <h3 className="text-xl sm:text-2xl font-bold mb-2 text-white">Contract Verified</h3>
                 <p className="text-gray-200 text-sm sm:text-base">
-                  Audited and verified on BscScan. Fully transparent and open-source.
+                  Verified on BscScan. Fully transparent and open-source.
                 </p>
               </div>
             </div>
@@ -458,7 +575,7 @@ export default function Home() {
 
       {/* Tokenomics Section */}
       <TokenomicsSection />
-      
+
       {/* Roadmap Section */}
       <section id="roadmap" className="py-20 px-4 sm:px-6 relative">
         <div className="max-w-4xl mx-auto">
@@ -502,23 +619,21 @@ export default function Home() {
             ].map((item, index) => (
               <Card
                 key={index}
-                className={`p-6 sm:p-8 border-white/10 backdrop-blur-sm transition-all hover:scale-[1.02] ${
-                  item.status === "completed"
+                className={`p-6 sm:p-8 border-white/10 backdrop-blur-sm transition-all hover:scale-[1.02] ${item.status === "completed"
                     ? "bg-primary/10 border-primary/30"
                     : item.status === "in-progress"
                       ? "bg-secondary/10 border-secondary/30"
                       : "bg-white/5"
-                }`}
+                  }`}
               >
                 <div className="flex items-start gap-4 sm:gap-6">
                   <div
-                    className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-lg sm:text-xl ${
-                      item.status === "completed"
+                    className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-lg sm:text-xl ${item.status === "completed"
                         ? "bg-gradient-to-br from-primary to-secondary text-black"
                         : item.status === "in-progress"
                           ? "bg-gradient-to-br from-secondary to-primary text-black"
                           : "bg-white/10 text-gray-400"
-                    }`}
+                      }`}
                   >
                     {item.status === "completed" ? "✓" : index + 1}
                   </div>
@@ -721,7 +836,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
               {/* Logo without background */}
-                <Image src='/mdao-logo.png' alt='MLEE DAO Logo' width={120} height={120} className="object-contain" />
+              <Image src='/mdao-logo.png' alt='MLEE DAO Logo' width={120} height={120} className="object-contain" />
             </div>
             <div className="text-center md:text-right">
               <p className="text-gray-400 text-sm">© {new Date().getFullYear()} MLEE DAO. All rights reserved.</p>
