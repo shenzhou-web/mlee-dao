@@ -7,7 +7,7 @@
 
 export const CONTRACTS = {
   // ⚠️  Replace with your deployed contract address after deployment
-  PRESALE: "0x3797C0462ccE05879B1A39bBb6a1eFD840De004c" as `0x${string}`,
+  PRESALE: "0x92a7782fD1c113A470fd0CB5023c7f1712067e40" as `0x${string}`,
 
   // USDT on BNB Smart Chain (official address — do NOT change)
   USDT_MAINNET: "0x55d398326f99059fF775485246999027B3197955" as `0x${string}`,
@@ -60,7 +60,7 @@ export const PHASE_PRICES = {
 
 // Token decimals
 export const MDAO_DECIMALS = 18;
-export const USDT_DECIMALS = 6; // BSC USDT uses 6 decimals
+export const USDT_DECIMALS = 18;
 
 // Purchase limits (in USDT, human-readable)
 export const MIN_PURCHASE_USDT = 10;
