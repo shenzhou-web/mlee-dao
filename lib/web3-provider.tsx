@@ -1,22 +1,10 @@
 "use client"
 
-import { getDefaultConfig, RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit"
-import { WagmiProvider, http } from "wagmi"
-import { bsc } from "wagmi/chains"
+import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit"
+import { WagmiProvider } from "wagmi"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { ACTIVE_CHAIN, wagmiConfig } from "@/lib/wagmi"
 import "@rainbow-me/rainbowkit/styles.css"
-
-// ─── Mainnet only ────────────────────────────────────────────────
-// Using official wagmi/chains — this prevents RainbowKit "unsupported" warning
-const ACTIVE_CHAIN = bsc
-
-const config = getDefaultConfig({
-  appName:     "MLEE DAO Presale",
-  projectId:   process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "YOUR_WALLETCONNECT_PROJECT_ID",
-  chains:      [ACTIVE_CHAIN],
-  transports:  { [ACTIVE_CHAIN.id]: http() },
-  ssr: true,
-})
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,7 +26,7 @@ const mdaoTheme = darkTheme({
 
 export function Web3Provider({ children }: { children: React.ReactNode }) {
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
           theme={mdaoTheme}
