@@ -62,7 +62,6 @@ export function usePresaleData() {
   const maxTokenAllocation = data?.[5]?.result as bigint | undefined;
   const saleTokenDecimals = data?.[6]?.result as bigint | undefined;
   const isPaused = data?.[7]?.result as boolean | undefined;
-
   // ── Parsed stats ──────────────────────────────────────────────────
   const totalSoldRaw = stats?.[0];
   const totalClaimedRaw = stats?.[1];

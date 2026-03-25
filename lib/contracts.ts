@@ -7,7 +7,7 @@
 
 export const CONTRACTS = {
   // ⚠️  Replace with your deployed contract address after deployment
-  PRESALE: "0x3797C0462ccE05879B1A39bBb6a1eFD840De004c" as `0x${string}`,
+  PRESALE: "0x8D39B395f3438B9c26785ff73a208415E7bec664" as `0x${string}`,
 
   // USDT on BNB Smart Chain (official address — do NOT change)
   USDT_MAINNET: "0x55d398326f99059fF775485246999027B3197955" as `0x${string}`,

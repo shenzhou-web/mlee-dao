@@ -91,7 +91,7 @@ export function VestingSchedule() {
             ✓ Tokens Claimed!
           </div>
           {txHash && (
-            <a href={getTxLink(txHash)} target="_blank" rel="noopener noreferrer"
+            <a href={getTxLink(txHash, true)} target="_blank" rel="noopener noreferrer"
               className="block text-center text-xs py-1"
               style={{ color: "rgba(46,216,163,0.6)", fontFamily: "'Rajdhani', sans-serif" }}>
               View on BscScan ↗

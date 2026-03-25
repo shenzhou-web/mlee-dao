@@ -9,7 +9,7 @@ import {
 } from "wagmi";
 import { MDAO_PRESALE_ABI } from "@/lib/abi";
 import { ERC20_ABI } from "@/lib/erc20-abi";
-import { CONTRACTS, BSC_MAINNET } from "@/lib/contracts";
+import { CONTRACTS, BSC_TESTNET } from "@/lib/contracts";
 import { parseUSDT } from "@/lib/utils";
 
 export type TxStep =
@@ -44,9 +44,9 @@ export function useBuyTokens() {
   // Wait for approve tx to confirm
   const { isLoading: approveConfirming, isSuccess: approveSuccess } =
     useWaitForTransactionReceipt({
-    hash: approveTxHash,
-    query: { enabled: !!approveTxHash },
-  });
+      hash: approveTxHash,
+      query: { enabled: !!approveTxHash },
+    });
 
   // Wait for buy tx to confirm
   const { isLoading: buyConfirming, isSuccess: buySuccess } =
@@ -54,7 +54,7 @@ export function useBuyTokens() {
       hash: buyTxHash,
       query: { enabled: !!buyTxHash },
     });
-  
+
   useEffect(() => {
     if (approveSuccess) {
       setStep("approved");
@@ -80,19 +80,13 @@ export function useBuyTokens() {
       try {
         const rawAmount = parseUSDT(usdtAmount);
 
-        if (chainId !== BSC_MAINNET.id) {
-          setTxError("Please switch to BNB Smart Chain (Mainnet).");
+        if (chainId !== BSC_TESTNET.id) {
+          setTxError("Please switch to BNB Smart Chain (Testnet).");
           setStep("error");
           return;
         }
 
-        const usdtAddress = CONTRACTS.USDT_MAINNET;
-
-        if (chainId !== BSC_MAINNET.id) {
-          setTxError("Please switch to BNB Smart Chain (Mainnet).");
-          setStep("error");
-          return;
-        }
+        const usdtAddress = CONTRACTS.USDT_TESTNET;
 
         const hash = await writeContractAsync({
           address: usdtAddress,
@@ -108,7 +102,7 @@ export function useBuyTokens() {
         setStep("error");
       }
     },
-    [address, writeContractAsync],
+    [address, chainId, writeContractAsync],
   );
 
   /**
@@ -124,6 +118,12 @@ export function useBuyTokens() {
       try {
         const rawAmount = parseUSDT(usdtAmount);
 
+        if (chainId !== BSC_TESTNET.id) {
+          setTxError("Please switch to BNB Smart Chain (Testnet).");
+          setStep("error");
+          return;
+        }
+
         const hash = await writeContractAsync({
           address: CONTRACTS.PRESALE,
           abi: MDAO_PRESALE_ABI,
@@ -138,7 +138,7 @@ export function useBuyTokens() {
         setStep("error");
       }
     },
-    [address, writeContractAsync],
+    [address, chainId, writeContractAsync],
   );
 
   const reset = useCallback(() => {

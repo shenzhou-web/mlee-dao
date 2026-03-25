@@ -17,7 +17,7 @@ import {
  */
 export function useUserData() {
   const { address, isConnected } = useAccount();
-  const usdtAddress = CONTRACTS.USDT_MAINNET;
+  const usdtAddress = CONTRACTS.USDT_TESTNET;
 
   const { data, isLoading, refetch } = useReadContracts({
     contracts: address

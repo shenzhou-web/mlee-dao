@@ -2,13 +2,13 @@
 
 import { getDefaultConfig, RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit"
 import { WagmiProvider, http } from "wagmi"
-import { bsc } from "wagmi/chains"
+import { bscTestnet } from "wagmi/chains"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import "@rainbow-me/rainbowkit/styles.css"
 
-// ─── Mainnet only ────────────────────────────────────────────────
+// ─── Testnet only ────────────────────────────────────────────────
 // Using official wagmi/chains — this prevents RainbowKit "unsupported" warning
-const ACTIVE_CHAIN = bsc
+const ACTIVE_CHAIN = bscTestnet
 
 const config = getDefaultConfig({
   appName:     "MLEE DAO Presale",

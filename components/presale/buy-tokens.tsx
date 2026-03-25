@@ -6,7 +6,7 @@ import { usePresaleData } from "@/hooks/usePresaleData"
 import { useUserData } from "@/hooks/useUserData"
 import { useBuyTokens } from "@/hooks/useContractActions"
 import { calcTokensToReceive, formatTokenDisplay, getTxLink } from "@/lib/utils"
-import { BSC_MAINNET, MAX_PURCHASE_USDT, USDT_DECIMALS } from "@/lib/contracts"
+import { BSC_TESTNET, MAX_PURCHASE_USDT, USDT_DECIMALS } from "@/lib/contracts"
 
 const QUICK_AMOUNTS = [50, 100, 500, 1000]
 
@@ -14,6 +14,7 @@ export function BuyTokens() {
   const [inputAmount, setInputAmount] = useState("")
   const { isConnected } = useAccount()
   const chainId = useChainId()
+  console.log(chainId);
   const {
     priceRaw,
     minPaymentAmount,
@@ -43,7 +44,7 @@ export function BuyTokens() {
   const isAlreadyApproved = allowanceRaw ? Number(allowanceRaw) / 10 ** USDT_DECIMALS >= usdtAmount : false
   const needsApprove = isValid && !isAlreadyApproved
 
-  const isSupportedChain = chainId === BSC_MAINNET.id
+  const isSupportedChain = chainId === BSC_TESTNET.id
   const canBuy  = isValid && (isAlreadyApproved || step === "approved") && isConnected && isActive && isSupportedChain
 
   const handleApprove = () => approve(usdtAmount)
@@ -65,7 +66,7 @@ export function BuyTokens() {
           You received <strong style={{ color: "#f0b429" }}>{formatTokenDisplay(mdaoReceive)} MDAO</strong> tokens.
         </p>
         {buyTxHash && (
-          <a href={getTxLink(buyTxHash, false)} target="_blank" rel="noopener noreferrer"
+          <a href={getTxLink(buyTxHash, true)} target="_blank" rel="noopener noreferrer"
             className="inline-block text-xs px-4 py-2 rounded-lg transition-colors"
             style={{ background: "rgba(46,216,163,0.1)", border: "1px solid rgba(46,216,163,0.3)", color: "#2ed8a3" }}>
             View on BscScan ↗
@@ -212,7 +213,7 @@ export function BuyTokens() {
         <div className="rounded-lg p-3 text-center"
           style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)" }}>
           <p className="text-xs" style={{ color: "#ef4444", fontFamily: "'Rajdhani', sans-serif" }}>
-            Wrong network. Please switch to BNB Smart Chain (BEP-20).
+            Wrong network. Please switch to BNB Smart Chain (Testnet).
           </p>
         </div>
       )}
@@ -225,7 +226,7 @@ export function BuyTokens() {
 
       {/* Approve tx hash link */}
       {approveTxHash && step === "approved" && (
-        <a href={getTxLink(approveTxHash, false)} target="_blank" rel="noopener noreferrer"
+        <a href={getTxLink(approveTxHash, true)} target="_blank" rel="noopener noreferrer"
           className="block text-center text-xs py-1"
           style={{ color: "rgba(46,216,163,0.6)", fontFamily: "'Rajdhani', sans-serif" }}>
           ✓ Approval confirmed — View on BscScan ↗
