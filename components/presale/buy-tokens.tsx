@@ -6,7 +6,12 @@ import { usePresaleData } from "@/hooks/usePresaleData"
 import { useUserData } from "@/hooks/useUserData"
 import { useBuyTokens } from "@/hooks/useContractActions"
 import { calcTokensToReceive, formatTokenDisplay, getTxLink } from "@/lib/utils"
-import { BSC_TESTNET, MAX_PURCHASE_USDT, USDT_DECIMALS } from "@/lib/contracts"
+import {
+  BSC_MAINNET,
+  BSC_TESTNET,
+  MAX_PURCHASE_USDT,
+  USDT_DECIMALS,
+} from "@/lib/contracts"
 
 const QUICK_AMOUNTS = [50, 100, 500, 1000]
 
@@ -14,7 +19,7 @@ export function BuyTokens() {
   const [inputAmount, setInputAmount] = useState("")
   const { isConnected } = useAccount()
   const chainId = useChainId()
-  console.log(chainId);
+  console.log(chainId)
   const {
     priceRaw,
     minPaymentAmount,
@@ -46,6 +51,12 @@ export function BuyTokens() {
 
   const isSupportedChain = chainId === BSC_TESTNET.id
   const canBuy  = isValid && (isAlreadyApproved || step === "approved") && isConnected && isActive && isSupportedChain
+  const chainLabel =
+    chainId === BSC_TESTNET.id
+      ? `${BSC_TESTNET.name} (97)`
+      : chainId === BSC_MAINNET.id
+        ? `${BSC_MAINNET.name} (56)`
+        : `Unknown (${chainId ?? "n/a"})`
 
   const handleApprove = () => approve(usdtAmount)
   const handleBuy     = async () => {
@@ -99,13 +110,26 @@ export function BuyTokens() {
           </div>
         </div>
         {mounted && isConnected && (
-          <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'Rajdhani', sans-serif" }}>
-              Balance
-            </p>
-            <p className="text-sm font-bold" style={{ color: "#f0b429", fontFamily: "'JetBrains Mono', monospace" }}>
-              ${usdtBalance.toFixed(2)} USDT
-            </p>
+          <div className="text-right space-y-1">
+            <div
+              className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[10px] uppercase tracking-wider"
+              style={{
+                border: "1px solid rgba(240,180,41,0.25)",
+                color: "rgba(240,180,41,0.9)",
+                background: "rgba(240,180,41,0.08)",
+                fontFamily: "'Rajdhani', sans-serif",
+              }}
+            >
+              Network: {chainLabel}
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'Rajdhani', sans-serif" }}>
+                Balance
+              </p>
+              <p className="text-sm font-bold" style={{ color: "#f0b429", fontFamily: "'JetBrains Mono', monospace" }}>
+                ${usdtBalance.toFixed(2)} USDT
+              </p>
+            </div>
           </div>
         )}
       </div>
