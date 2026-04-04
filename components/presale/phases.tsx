@@ -49,7 +49,7 @@ function PhaseCard({ phase, name, days, allocation, price, isActive, accentColor
         <h3
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: "2rem",
+            fontSize: "clamp(1.6rem, 3.5vw, 2rem)",
             color: accentColor,
             letterSpacing: "0.05em",
             textShadow: `0 0 15px ${glowColor}60`,
@@ -60,17 +60,17 @@ function PhaseCard({ phase, name, days, allocation, price, isActive, accentColor
       </div>
 
       <div className="space-y-3">
-        <div className="flex justify-between items-center py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
           <span className="text-sm" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'Rajdhani', sans-serif" }}>Duration</span>
-          <span className="text-sm font-bold" style={{ color: "white", fontFamily: "'JetBrains Mono', monospace", fontSize: "0.8rem" }}>{days}</span>
+          <span className="text-sm font-bold sm:text-right" style={{ color: "white", fontFamily: "'JetBrains Mono', monospace", fontSize: "0.8rem" }}>{days}</span>
         </div>
-        <div className="flex justify-between items-center py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 py-2 border-b" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
           <span className="text-sm" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'Rajdhani', sans-serif" }}>Allocation</span>
-          <span className="text-sm font-bold" style={{ color: accentColor, fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.1rem", letterSpacing: "0.05em" }}>{allocation}</span>
+          <span className="text-sm font-bold sm:text-right" style={{ color: accentColor, fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.1rem", letterSpacing: "0.05em" }}>{allocation}</span>
         </div>
-        <div className="flex justify-between items-center py-2">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 py-2">
           <span className="text-sm" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'Rajdhani', sans-serif" }}>Price</span>
-          <span className="text-sm font-bold" style={{ color: accentColor, fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.1rem", letterSpacing: "0.05em" }}>{price}</span>
+          <span className="text-sm font-bold sm:text-right" style={{ color: accentColor, fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.1rem", letterSpacing: "0.05em" }}>{price}</span>
         </div>
       </div>
 
@@ -132,12 +132,12 @@ export function PricingPhases() {
         >
           Three Progressive Pricing Phases
         </h2>
-        <p className="text-sm max-w-lg mx-auto" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'Rajdhani', sans-serif" }}>
+        <p className="text-sm max-w-lg 2xl:max-w-2xl mx-auto" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'Rajdhani', sans-serif" }}>
           Early supporters get the best prices. Each phase rewards participation and builds community momentum.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
         {phases.map((p) => (
           <PhaseCard key={p.phase} {...p} isActive={phase === p.phase} />
         ))}

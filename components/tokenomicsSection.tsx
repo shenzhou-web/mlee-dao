@@ -78,7 +78,7 @@ export default function TokenomicsSection() {
       {/* Background gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-green-500/5 pointer-events-none" />
       
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl 2xl:max-w-[1400px] mx-auto relative z-10">
         {/* Header */}
         <div className="text-center mb-12 sm:mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
@@ -86,18 +86,18 @@ export default function TokenomicsSection() {
               Tokenomics
             </span>
           </h2>
-          <p className="text-gray-400 max-w-3xl mx-auto text-base sm:text-lg lg:text-xl px-4">
+          <p className="text-gray-400 max-w-3xl 2xl:max-w-4xl mx-auto text-base sm:text-lg lg:text-xl px-4">
             A sustainable and governance-focused economic model designed for long-term value creation and community empowerment
           </p>
         </div>
 
         {/* BscScan Verification Button */}
-        <div className="flex justify-center mb-12">
+        <div className="flex justify-center mb-12 px-4">
           <a 
             href="https://bscscan.com/token/0xC4bF2518AA953304170753388F83277Eb9588a7A" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-bold px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-yellow-500/50 hover:scale-105"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-bold px-6 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-yellow-500/50 hover:scale-105 text-sm sm:text-base"
           >
             <CheckCircle className="w-5 h-5" />
             Verified on BscScan
@@ -106,7 +106,7 @@ export default function TokenomicsSection() {
         </div>
 
         {/* Key Metrics Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 sm:mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 2xl:gap-8 mb-12 sm:mb-16">
           {keyMetrics.map((metric, index) => {
             const Icon = metric.icon;
             return (
@@ -128,11 +128,11 @@ export default function TokenomicsSection() {
         </div>
 
         {/* Allocation Breakdown */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-12 sm:mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 2xl:gap-10 mb-12 sm:mb-16">
           {/* Pie Chart */}
           <Card className="p-4 sm:p-6 lg:p-8 bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl">
             <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-white text-center">Token Allocation</h3>
-            <ResponsiveContainer width="100%" height={300} className="sm:h-96">
+            <ResponsiveContainer width="100%" height={300} className="sm:h-96 min-h-[260px]">
               <PieChart>
                 <Pie
                   data={allocationData}
@@ -140,7 +140,15 @@ export default function TokenomicsSection() {
                   cy="50%"
                   labelLine={false}
                   label={renderCustomLabel}
-                  outerRadius={isMounted && typeof window !== 'undefined' && window.innerWidth < 640 ? 80 : 120}
+                  outerRadius={
+                    isMounted && typeof window !== 'undefined'
+                      ? window.innerWidth < 640
+                        ? 80
+                        : window.innerWidth < 1024
+                          ? 110
+                          : 140
+                      : 110
+                  }
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -152,7 +160,15 @@ export default function TokenomicsSection() {
                 <Legend 
                   verticalAlign="bottom" 
                   height={36}
-                  wrapperStyle={{ fontSize: '12px' }}
+                  wrapperStyle={{
+                    fontSize: '12px',
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    flexWrap: 'wrap',
+                    gap: '6px 16px',
+                    paddingTop: '8px'
+                  }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -164,7 +180,7 @@ export default function TokenomicsSection() {
             <div className="space-y-4 sm:space-y-5">
               {allocationData.map((item, index) => (
                 <div key={index} className="group">
-                  <div className="flex justify-between items-center mb-2">
+                  <div className="flex justify-between items-center gap-3 mb-2">
                     <div className="flex items-center gap-2 sm:gap-3">
                       <div 
                         className="w-3 h-3 sm:w-4 sm:h-4 rounded-full shadow-lg flex-shrink-0" 
@@ -174,7 +190,7 @@ export default function TokenomicsSection() {
                     </div>
                     <span className="text-yellow-400 font-bold text-sm sm:text-base">{item.value}%</span>
                   </div>
-                  <div className="ml-5 sm:ml-7 mb-3">
+                  <div className="ml-4 sm:ml-7 mb-3">
                     <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
                       <div 
                         className="h-full rounded-full transition-all duration-500 group-hover:opacity-80"
@@ -193,7 +209,7 @@ export default function TokenomicsSection() {
         </div>
 
         {/* Detailed Allocation Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 2xl:gap-8 mb-12 sm:mb-16">
           <Card className="p-4 sm:p-6 bg-gradient-to-br from-yellow-500/10 via-yellow-500/5 to-transparent border border-yellow-500/20 backdrop-blur-sm rounded-xl hover:border-yellow-500/40 transition-all">
             <div className="flex items-center gap-3 mb-3 sm:mb-4">
               <Users className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400 flex-shrink-0" />
@@ -267,21 +283,21 @@ export default function TokenomicsSection() {
             <Coins className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400" />
             Token Information
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 2xl:gap-8">
             {tokenInfo.map((item, index) => (
-              <div 
-                key={index} 
-                className="flex justify-between items-center py-3 sm:py-4 px-3 sm:px-4 bg-gray-800/30 rounded-lg border border-gray-700 hover:border-yellow-500/30 transition-all"
-              >
-                <span className="text-gray-400 font-medium text-sm sm:text-base">{item.label}</span>
-                <span className="font-bold text-white text-sm sm:text-base ml-2">{item.value}</span>
-              </div>
+            <div 
+              key={index} 
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 py-3 sm:py-4 px-3 sm:px-4 bg-gray-800/30 rounded-lg border border-gray-700 hover:border-yellow-500/30 transition-all"
+            >
+              <span className="text-gray-400 font-medium text-sm sm:text-base">{item.label}</span>
+              <span className="font-bold text-white text-sm sm:text-base sm:text-right break-all">{item.value}</span>
+            </div>
             ))}
           </div>
         </Card>
 
         {/* Key Features */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 2xl:gap-8">
           <Card className="p-4 sm:p-6 bg-gradient-to-br from-yellow-500/10 to-transparent border border-yellow-500/20 rounded-xl text-center hover:border-yellow-500/40 transition-all">
             <Shield className="w-10 h-10 sm:w-12 sm:h-12 text-yellow-400 mx-auto mb-3 sm:mb-4" />
             <h4 className="font-bold text-white mb-2 text-sm sm:text-base">Fixed Supply</h4>

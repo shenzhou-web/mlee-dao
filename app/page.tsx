@@ -76,10 +76,16 @@ export default function Home() {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-black/80 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
           }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             <div className="flex-shrink-0 flex items-center gap-3 animate-fade-in">
-              <Image src='/mdao-logo.png' alt='MLEE DAO Logo' width={120} height={120} className="object-contain" />
+              <Image
+                src="/mdao-logo.png"
+                alt="MLEE DAO Logo"
+                width={120}
+                height={120}
+                className="object-contain w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20"
+              />
               {/* <span className="text-lg sm:text-xl font-bold">MLEE DAO</span> */}
             </div>
 
@@ -234,19 +240,19 @@ export default function Home() {
 
       {/* Hero Section */}
   {/* Hero Section */}
-<section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 pt-20">
+<section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 pt-20 overflow-hidden">
   {/* Animated Background Grid */}
   <div className="absolute inset-0 overflow-hidden">
     <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_40%,transparent_100%)]" />
   </div>
 
   {/* Orbs */}
-  <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#dba640]/10 rounded-full blur-3xl animate-pulse" />
-  <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-700" />
+  <div className="absolute top-1/4 left-1/4 w-72 h-72 sm:w-96 sm:h-96 bg-[#dba640]/10 rounded-full blur-3xl animate-pulse" />
+  <div className="absolute bottom-1/4 right-1/4 w-72 h-72 sm:w-96 sm:h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-700" />
   {/* Extra presale-focused orb */}
-  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#dba640]/5 rounded-full blur-3xl pointer-events-none" />
+  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] sm:w-[480px] sm:h-[480px] lg:w-[640px] lg:h-[640px] bg-[#dba640]/5 rounded-full blur-3xl pointer-events-none" />
 
-  <div className="relative max-w-5xl mx-auto text-center z-10">
+  <div className="relative max-w-5xl xl:max-w-6xl 2xl:max-w-[1400px] mx-auto text-center z-10">
 
     {/* Verified badge */}
     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 animate-fade-in">
@@ -425,7 +431,7 @@ export default function Home() {
 
       {/* Contract Verification Section */}
       <section className="py-20 px-4 sm:px-6 relative">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl 2xl:max-w-[1200px] mx-auto">
           <Card className="p-6 sm:p-8 bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/10 border-primary/20 backdrop-blur-sm">
             <div className="flex items-start gap-4 mb-6">
               <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
@@ -478,7 +484,7 @@ export default function Home() {
 
       {/* About Section */}
       <section id="about" className="py-20 px-4 sm:px-6 relative">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl 2xl:max-w-[1400px] mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
               About{" "}
@@ -489,7 +495,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="max-w-3xl mx-auto mb-12">
+          <div className="max-w-3xl 2xl:max-w-[1100px] mx-auto mb-12">
             <Card className="p-8 bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/10 border-primary/20 backdrop-blur-sm">
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <div className="flex-shrink-0">
@@ -577,20 +583,20 @@ export default function Home() {
       <TokenomicsSection />
 
       {/* Roadmap Section */}
-      <section id="roadmap" className="py-20 px-4 sm:px-6 relative">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-white">
+      <section id="roadmap" className="py-16 sm:py-20 2xl:py-24 px-4 sm:px-6 relative">
+        <div className="max-w-4xl 2xl:max-w-[1200px] 3xl:max-w-[1400px] mx-auto">
+          <div className="text-center mb-12 sm:mb-16 2xl:mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl 2xl:text-6xl font-bold mb-4 text-white">
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Development Roadmap
               </span>
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto text-base sm:text-lg text-pretty">
+            <p className="text-gray-400 max-w-2xl 2xl:max-w-3xl mx-auto text-base sm:text-lg 2xl:text-xl text-pretty">
               Project milestones and planned features
             </p>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8 2xl:space-y-10">
             {[
               {
                 phase: "Phase 1",
@@ -619,16 +625,16 @@ export default function Home() {
             ].map((item, index) => (
               <Card
                 key={index}
-                className={`p-6 sm:p-8 border-white/10 backdrop-blur-sm transition-all hover:scale-[1.02] ${item.status === "completed"
+                className={`p-6 sm:p-8 2xl:p-10 border-white/10 backdrop-blur-sm transition-all hover:scale-[1.02] ${item.status === "completed"
                     ? "bg-primary/10 border-primary/30"
                     : item.status === "in-progress"
                       ? "bg-secondary/10 border-secondary/30"
                       : "bg-white/5"
                   }`}
               >
-                <div className="flex items-start gap-4 sm:gap-6">
+                <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
                   <div
-                    className={`w-12 h-12 sm:w-16 sm:h-16 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-lg sm:text-xl ${item.status === "completed"
+                    className={`w-12 h-12 sm:w-16 sm:h-16 2xl:w-18 2xl:h-18 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-lg sm:text-xl 2xl:text-2xl ${item.status === "completed"
                         ? "bg-gradient-to-br from-primary to-secondary text-black"
                         : item.status === "in-progress"
                           ? "bg-gradient-to-br from-secondary to-primary text-black"
@@ -638,16 +644,16 @@ export default function Home() {
                     {item.status === "completed" ? "✓" : index + 1}
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl sm:text-2xl font-bold text-white">{item.phase}</h3>
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                      <h3 className="text-xl sm:text-2xl 2xl:text-3xl font-bold text-white">{item.phase}</h3>
                       {item.status === "in-progress" && (
                         <span className="px-3 py-1 rounded-full bg-secondary/20 text-secondary text-xs font-semibold">
                           In Progress
                         </span>
                       )}
                     </div>
-                    <h4 className="font-semibold text-lg mb-2 text-white">{item.title}</h4>
-                    <p className="text-gray-400 text-sm sm:text-base">{item.description}</p>
+                    <h4 className="font-semibold text-lg sm:text-xl 2xl:text-2xl mb-2 text-white">{item.title}</h4>
+                    <p className="text-gray-400 text-sm sm:text-base 2xl:text-lg">{item.description}</p>
                   </div>
                 </div>
               </Card>
@@ -658,7 +664,7 @@ export default function Home() {
 
       {/* Governance Section */}
       <section className="py-20 px-4 sm:px-6 relative">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl 2xl:max-w-[1200px] mx-auto">
           <Card className="p-8 sm:p-12 bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/10 border-primary/20 backdrop-blur-sm text-center">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary via-secondary to-primary flex items-center justify-center mx-auto mb-6">
               <span className="text-3xl sm:text-4xl">🗳️</span>
@@ -677,20 +683,20 @@ export default function Home() {
       </section>
 
       {/* Links Section */}
-      <section id="links" className="py-20 px-4 sm:px-6 relative">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+      <section id="links" className="py-16 sm:py-20 2xl:py-24 px-4 sm:px-6 relative">
+        <div className="max-w-4xl 2xl:max-w-[1200px] 3xl:max-w-[1400px] mx-auto">
+          <div className="text-center mb-12 sm:mb-16 2xl:mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl 2xl:text-6xl font-bold mb-4">
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Join Our Community
               </span>
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto text-base sm:text-lg text-pretty">
+            <p className="text-gray-400 max-w-2xl 2xl:max-w-3xl mx-auto text-base sm:text-lg 2xl:text-xl text-pretty">
               Connect with us across our official channels
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-5 sm:gap-6 2xl:gap-8">
             {[
               { name: "Telegram", url: "https://t.me/MleeDAO", icon: "💬" },
               { name: "X (Twitter)", url: "https://x.com/MLEEDAO", icon: "𝕏" },
@@ -699,14 +705,14 @@ export default function Home() {
               <Card
                 key={index}
                 onClick={() => window.open(link.url, "_blank")}
-                className="p-6 bg-transparent backdrop-blur-sm border-white/10 hover:border-primary/30 hover:bg-primary/10 transition-all cursor-pointer group"
+                className="p-6 2xl:p-8 bg-transparent backdrop-blur-sm border-white/10 hover:border-primary/30 hover:bg-primary/10 transition-all cursor-pointer group"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 text-white rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 2xl:w-14 2xl:h-14 text-white rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
                       {link.icon}
                     </div>
-                    <span className="font-semibold text-lg text-primary group-hover:text-white">{link.name}</span>
+                    <span className="font-semibold text-lg 2xl:text-xl text-primary group-hover:text-white">{link.name}</span>
                   </div>
                   <ExternalLink className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
                 </div>
@@ -717,27 +723,27 @@ export default function Home() {
       </section>
 
       {/* Contact & Resources Section */}
-      <section id="contact" className="py-20 px-4 sm:px-6 relative">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-white">
+      <section id="contact" className="py-16 sm:py-20 2xl:py-24 px-4 sm:px-6 relative">
+        <div className="max-w-4xl 2xl:max-w-[1200px] 3xl:max-w-[1400px] mx-auto">
+          <div className="text-center mb-12 sm:mb-16 2xl:mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl 2xl:text-6xl font-bold mb-4 text-white">
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Official Contact & Resources
               </span>
             </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto text-base sm:text-lg text-pretty">
+            <p className="text-gray-400 max-w-2xl 2xl:max-w-3xl mx-auto text-base sm:text-lg 2xl:text-xl text-pretty">
               Connect through our verified channels
             </p>
           </div>
 
           {/* Official Email Box - Prominent */}
-          <Card className="mb-8 p-8 bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/10 border-primary/20 backdrop-blur-sm">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+          <Card className="mb-8 p-6 sm:p-8 2xl:p-10 bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/10 border-primary/20 backdrop-blur-sm">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
               <div className="text-center sm:text-left">
-                <h3 className="text-xl sm:text-2xl font-bold mb-2 text-white">Official Email</h3>
-                <p className="text-gray-400 mb-4">For partnerships, inquiries, and official communications</p>
-                <div className="flex items-center gap-2 p-4 rounded-xl bg-black/40 border border-white/10">
-                  <code className="text-sm sm:text-base flex-1 text-primary font-mono">{officialEmail}</code>
+                <h3 className="text-xl sm:text-2xl 2xl:text-3xl font-bold mb-2 text-white">Official Email</h3>
+                <p className="text-gray-400 mb-4 text-sm sm:text-base 2xl:text-lg">For partnerships, inquiries, and official communications</p>
+                <div className="flex flex-col sm:flex-row items-center gap-2 p-4 rounded-xl bg-black/40 border border-white/10">
+                  <code className="text-sm sm:text-base flex-1 text-primary font-mono break-all">{officialEmail}</code>
                   <button
                     onClick={copyEmail}
                     className="p-2 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0"
@@ -749,7 +755,7 @@ export default function Home() {
               <Button
                 onClick={() => window.open(`mailto:${officialEmail}`, "_blank")}
                 size="lg"
-                className="bg-gradient-to-r from-primary via-secondary to-primary text-black font-bold hover:opacity-90"
+                className="w-full sm:w-auto bg-gradient-to-r from-primary via-secondary to-primary text-black font-bold hover:opacity-90"
               >
                 Send Email
               </Button>
@@ -757,16 +763,16 @@ export default function Home() {
           </Card>
 
           {/* Official Website */}
-          <Card className="mb-8 p-6 bg-white/5 backdrop-blur-sm border-white/10 hover:border-primary/30 transition-all">
-            <div className="flex items-center justify-between">
+          <Card className="mb-8 p-6 2xl:p-8 bg-white/5 backdrop-blur-sm border-white/10 hover:border-primary/30 transition-all">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-lg sm:text-xl font-bold mb-2 text-white">Official Website</h3>
-                <p className="text-primary text-sm sm:text-base font-mono">{officialWebsite}</p>
+                <h3 className="text-lg sm:text-xl 2xl:text-2xl font-bold mb-2 text-white">Official Website</h3>
+                <p className="text-primary text-sm sm:text-base 2xl:text-lg font-mono break-all">{officialWebsite}</p>
               </div>
               <Button
                 onClick={() => window.open(officialWebsite, "_blank")}
                 variant="outline"
-                className="border-primary/30 hover:bg-primary/10 text-white hover:text-white"
+                className="w-full sm:w-auto border-primary/30 hover:bg-primary/10 text-white hover:text-white"
               >
                 Visit Website
               </Button>
@@ -774,15 +780,15 @@ export default function Home() {
           </Card>
 
           {/* Additional Resources */}
-          <div className="grid sm:grid-cols-2 gap-6">
-            <Card className="p-6 bg-white/5 backdrop-blur-sm border-white/10 hover:border-secondary/30 transition-all">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 2xl:gap-8">
+            <Card className="p-6 2xl:p-8 bg-white/5 backdrop-blur-sm border-white/10 hover:border-secondary/30 transition-all">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary/20 to-primary/20 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 2xl:w-14 2xl:h-14 rounded-xl bg-gradient-to-br from-secondary/20 to-primary/20 flex items-center justify-center flex-shrink-0">
                   <Download className="w-6 h-6 text-secondary" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold mb-2 text-white">Whitepaper</h3>
-                  <p className="text-sm text-gray-400 mb-4">You can view our white paper by downloading it. </p>
+                  <h3 className="text-lg 2xl:text-xl font-bold mb-2 text-white">Whitepaper</h3>
+                  <p className="text-sm 2xl:text-base text-gray-400 mb-4">You can view our white paper by downloading it. </p>
                   <Button
                     variant="outline"
                     size="sm"
@@ -797,15 +803,15 @@ export default function Home() {
               </div>
             </Card>
 
-            <Card className="p-6 bg-transparent backdrop-blur-sm border-white/10 hover:border-primary/30 transition-all">
+            <Card className="p-6 2xl:p-8 bg-transparent backdrop-blur-sm border-white/10 hover:border-primary/30 transition-all">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 2xl:w-14 2xl:h-14 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center flex-shrink-0">
                   <ExternalLink className="w-6 h-6 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold mb-2 text-white">Social Media</h3>
-                  <p className="text-sm text-gray-400 mb-4">Follow us for updates and community engagement</p>
-                  <div className="flex gap-2">
+                  <h3 className="text-lg 2xl:text-xl font-bold mb-2 text-white">Social Media</h3>
+                  <p className="text-sm 2xl:text-base text-gray-400 mb-4">Follow us for updates and community engagement</p>
+                  <div className="flex flex-wrap gap-2">
                     <Button
                       variant="outline"
                       size="sm"
@@ -832,11 +838,17 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="py-12 px-4 sm:px-6 border-t border-white/10">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl 2xl:max-w-[1400px] mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
               {/* Logo without background */}
-              <Image src='/mdao-logo.png' alt='MLEE DAO Logo' width={120} height={120} className="object-contain" />
+              <Image
+                src="/mdao-logo.png"
+                alt="MLEE DAO Logo"
+                width={120}
+                height={120}
+                className="object-contain w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20"
+              />
             </div>
             <div className="text-center md:text-right">
               <p className="text-gray-400 text-sm">© {new Date().getFullYear()} MLEE DAO. All rights reserved.</p>

@@ -58,7 +58,7 @@ export function PresaleFeatures() {
         </h2>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {features.map((f, i) => (
           <div
             key={i}
@@ -76,7 +76,7 @@ export function PresaleFeatures() {
               ;(e.currentTarget as HTMLDivElement).style.boxShadow = "none"
             }}
           >
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-3 sm:gap-4">
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0 transition-all duration-300 group-hover:scale-110"
                 style={{

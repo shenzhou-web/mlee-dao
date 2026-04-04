@@ -104,11 +104,17 @@ function Navbar() {
         borderBottom: scrolled ? "1px solid rgba(240,180,41,0.12)" : "1px solid transparent",
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+      <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
         {/* Logo */}
    <Link href="/" className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition">
     <div className="flex-shrink-0 flex items-center gap-3 animate-fade-in">
-              <Image src='/mdao-logo-removebg.png' alt='MLEE DAO Logo' width={120} height={120} className="object-contain" />
+              <Image
+                src="/mdao-logo-removebg.png"
+                alt="MLEE DAO Logo"
+                width={120}
+                height={120}
+                className="object-contain w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20"
+              />
             </div>
 
 
@@ -168,7 +174,7 @@ function TickerTape() {
         {items.map((item, i) => (
           <span
             key={i}
-            className="flex-shrink-0 px-8 text-xs font-semibold uppercase tracking-widest"
+            className="flex-shrink-0 px-6 sm:px-8 text-xs font-semibold uppercase tracking-widest"
             style={{ color: "rgba(240,180,41,0.7)", fontFamily: "'Rajdhani', sans-serif" }}
           >
             {item}
@@ -247,7 +253,7 @@ function HeroSection() {
 
       {/* Subtitle */}
       <p
-        className="text-lg sm:text-xl mb-10 max-w-2xl mx-auto animate-fade-in-up opacity-0"
+        className="text-lg sm:text-xl mb-10 max-w-2xl 2xl:max-w-3xl mx-auto animate-fade-in-up opacity-0"
         style={{
           color: "rgba(255,255,255,0.5)",
           fontFamily: "'Rajdhani', sans-serif",
@@ -365,7 +371,7 @@ function FAQ() {
         </h2>
       </div>
 
-      <div className="space-y-3 max-w-3xl mx-auto">
+      <div className="space-y-3 max-w-3xl 2xl:max-w-[1200px] mx-auto">
         {faqs.map((faq, i) => (
           <div
             key={i}
@@ -428,7 +434,7 @@ export default function PresalePage() {
 
         {/* ── Countdown + Stats + Progress ── */}
         <section id="buy" className="px-4 sm:px-6 pb-16">
-          <div className="max-w-6xl mx-auto space-y-6">
+          <div className="max-w-6xl 2xl:max-w-[1400px] mx-auto space-y-6">
             {/* Countdown card */}
             <div
               className="rounded-2xl p-8 sm:p-10 animate-pulse-gold"
@@ -469,28 +475,28 @@ export default function PresalePage() {
 
         {/* ── Pricing Phases ── */}
         <section id="phases" className="px-4 sm:px-6 pb-20">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl 2xl:max-w-[1400px] mx-auto">
             <PricingPhases />
           </div>
         </section>
 
         {/* ── Features ── */}
         <section id="about" className="px-4 sm:px-6 pb-20">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl 2xl:max-w-[1400px] mx-auto">
             <PresaleFeatures />
           </div>
         </section>
 
         {/* ── FAQ ── */}
         <section className="px-4 sm:px-6 pb-20">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl 2xl:max-w-[1400px] mx-auto">
             <FAQ />
           </div>
         </section>
 
         {/* ── Final CTA ── */}
         <section className="px-4 sm:px-6 pb-24">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-3xl 2xl:max-w-[1200px] mx-auto text-center">
             <div
               className="rounded-3xl p-10 sm:p-14 space-y-6 relative overflow-hidden"
               style={{
@@ -539,7 +545,7 @@ export default function PresalePage() {
           className="px-4 sm:px-6 py-10 border-t"
           style={{ borderColor: "rgba(240,180,41,0.1)" }}
         >
-          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="max-w-6xl 2xl:max-w-[1400px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Image
                 src="/mdao-logo-removebg.png"

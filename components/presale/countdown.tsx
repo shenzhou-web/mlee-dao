@@ -120,13 +120,19 @@ export function PresaleCountdown() {
         {label}
       </p>
 
-      <div className="flex items-end gap-3 sm:gap-5">
+      <div className="hidden sm:flex items-end gap-5">
         <TimeBlock value={timeLeft.days}    label="Days"    />
         {SEP}
         <TimeBlock value={timeLeft.hours}   label="Hours"   />
         {SEP}
         <TimeBlock value={timeLeft.minutes} label="Minutes" />
         {SEP}
+        <TimeBlock value={timeLeft.seconds} label="Seconds" />
+      </div>
+      <div className="grid grid-cols-2 gap-4 sm:hidden">
+        <TimeBlock value={timeLeft.days}    label="Days"    />
+        <TimeBlock value={timeLeft.hours}   label="Hours"   />
+        <TimeBlock value={timeLeft.minutes} label="Minutes" />
         <TimeBlock value={timeLeft.seconds} label="Seconds" />
       </div>
     </div>

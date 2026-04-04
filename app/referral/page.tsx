@@ -22,7 +22,7 @@ export default function ReferralPage() {
     <main className="min-h-screen bg-gradient-to-b from-black via-zinc-950 to-black text-white">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl 2xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
               <ArrowLeft className="w-5 h-5" />
@@ -37,7 +37,7 @@ export default function ReferralPage() {
 
       {/* Main Content */}
       <div className="pt-24 pb-20 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl 2xl:max-w-[1200px] mx-auto">
           {/* Hero */}
           <div className="text-center mb-12">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-accent to-secondary flex items-center justify-center mx-auto mb-6">

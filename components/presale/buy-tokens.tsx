@@ -115,7 +115,7 @@ export function BuyTokens() {
           style={{ color: "rgba(255,255,255,0.3)", fontFamily: "'Rajdhani', sans-serif" }}>
           Quick Select (USDT)
         </p>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {QUICK_AMOUNTS.map((q) => (
             <button key={q} onClick={() => setInputAmount(String(q))}
               className="rounded-lg py-2 text-sm font-bold transition-all duration-200"
@@ -185,7 +185,7 @@ export function BuyTokens() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Approve USDT */}
           <button onClick={handleApprove}
             disabled={!isValid || isAlreadyApproved || isApproving || isBuying}
