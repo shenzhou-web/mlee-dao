@@ -77,7 +77,7 @@ const STATS = [
 ]
 
 const FOOTER_LINKS = [
-  { label: "X/Twitter",  href: "https://x.com/MLEEDAO" },
+  { label: "X/Twitter",  href: "https://x.com/MDAO_OFFICIAL" },
   { label: "Telegram",   href: "https://t.me/MleeDAO" },
   { label: "Whitepaper", href: "/whitepaper.pdf" },
   { label: "Presale",    href: "/presale" },

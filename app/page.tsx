@@ -699,7 +699,7 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-5 sm:gap-6 2xl:gap-8">
             {[
               { name: "Telegram", url: "https://t.me/MleeDAO", icon: "💬" },
-              { name: "X (Twitter)", url: "https://x.com/MLEEDAO", icon: "𝕏" },
+              { name: "X (Twitter)", url: "https://x.com/MDAO_OFFICIAL", icon: "𝕏" },
               { name: "GitHub", url: "https://github.com/shenzhou-web/mlee-dao", icon: "💻" },
             ].map((link, index) => (
               <Card
@@ -823,7 +823,7 @@ export default function Home() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => window.open("https://x.com/MLEEDAO", "_blank")}
+                      onClick={() => window.open("https://x.com/MDAO_OFFICIAL", "_blank")}
                       className="border-primary bg-primary/10 text-primary hover:bg-primary/20 hover:text-white hover:shadow-lg hover:shadow-primary/25"
                     >
                       X/Twitter

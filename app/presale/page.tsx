@@ -567,7 +567,7 @@ export default function PresalePage() {
             </div>
             <div className="flex items-center gap-6">
               {[
-                { label: "X/Twitter", href: "https://x.com/MLEEDAO" },
+                { label: "X/Twitter", href: "https://x.com/MDAO_OFFICIAL" },
                 { label: "Telegram", href: "https://t.me/MleeDAO" },
                 { label: "Whitepaper", href: "/whitepaper.pdf" },
               ].map((link) => (
