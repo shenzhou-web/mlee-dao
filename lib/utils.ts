@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { MDAO_DECIMALS, USDT_DECIMALS } from "./contracts";
+import { IS_TESTNET, MDAO_DECIMALS, USDT_DECIMALS } from "./contracts";
 import { formatUnits } from "viem";
 
 export function cn(...inputs: ClassValue[]) {
@@ -170,7 +170,7 @@ export function shortenAddress(addr: string | undefined): string {
 /**
  * Get BscScan link for a transaction
  */
-export function getTxLink(hash: string, testnet = false): string {
+export function getTxLink(hash: string, testnet = IS_TESTNET): string {
   const base = testnet ? "https://testnet.bscscan.com" : "https://bscscan.com";
   return `${base}/tx/${hash}`;
 }
@@ -178,7 +178,7 @@ export function getTxLink(hash: string, testnet = false): string {
 /**
  * Get BscScan link for an address
  */
-export function getAddressLink(address: string, testnet = false): string {
+export function getAddressLink(address: string, testnet = IS_TESTNET): string {
   const base = testnet ? "https://testnet.bscscan.com" : "https://bscscan.com";
   return `${base}/address/${address}`;
 }

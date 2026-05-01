@@ -2,7 +2,7 @@
 
 import { useReadContracts } from "wagmi";
 import { MDAO_PRESALE_ABI } from "@/lib/abi";
-import { CONTRACTS } from "@/lib/contracts";
+import { ACTIVE_PRESALE_CONTRACT } from "@/lib/contracts";
 import {
   formatMDAO,
   formatUSDT,
@@ -13,7 +13,7 @@ import {
 import { PHASE_DURATION, USDT_DECIMALS } from "@/lib/contracts";
 
 const presaleContract = {
-  address: CONTRACTS.PRESALE,
+  address: ACTIVE_PRESALE_CONTRACT,
   abi: MDAO_PRESALE_ABI,
 } as const;
 

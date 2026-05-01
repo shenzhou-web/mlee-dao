@@ -11,10 +11,13 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { http } from "wagmi";
 import { bsc, bscTestnet } from "wagmi/chains";
+import { ACTIVE_CHAIN_CONFIG, IS_TESTNET } from "@/lib/contracts";
 
-const IS_TESTNET = process.env.NEXT_PUBLIC_USE_TESTNET === "true";
-
-export const ACTIVE_CHAIN = bsc;
+export const ACTIVE_CHAIN = {
+  ...(IS_TESTNET ? bscTestnet : bsc),
+  rpcUrls: ACTIVE_CHAIN_CONFIG.rpcUrls,
+  blockExplorers: ACTIVE_CHAIN_CONFIG.blockExplorers,
+} as const;
 
 export const wagmiChains = [ACTIVE_CHAIN] as const;
 
@@ -52,10 +55,9 @@ export const wagmiConfig = getDefaultConfig({
       icons: [appIcon],
     },
   },
-  chains: [bsc],
+  chains: wagmiChains,
   transports: {
-    [bsc.id]: http("https://bsc-dataseed1.binance.org"),
-    // [bscTestnet.id]: http("https://bsc-testnet-rpc.publicnode.com"),
+    [ACTIVE_CHAIN.id]: http(ACTIVE_CHAIN.rpcUrls.default.http[0]),
   },
   // Prevent duplicate injected wallets (e.g., Brave via EIP-6963) in the modal
   multiInjectedProviderDiscovery: false,

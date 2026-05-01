@@ -104,6 +104,18 @@ export default function Home() {
                 >
                   Presale
                 </Link>
+                <Link
+                  href="/partnership"
+                  className="px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-smooth"
+                >
+                  Partnership
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-smooth"
+                >
+                  Dashboard
+                </Link>
                 {/* <Link
                   href="/airdrop"
                   className="px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 transition-smooth"
@@ -184,6 +196,18 @@ export default function Home() {
                 className="block w-full text-left px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all"
               >
                 Presale
+              </Link>
+              <Link
+                href="/partnership"
+                className="block w-full text-left px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all"
+              >
+                Partnership
+              </Link>
+              <Link
+                href="/dashboard"
+                className="block w-full text-left px-4 py-3 rounded-lg text-gray-300 hover:text-white hover:bg-white/10 transition-all"
+              >
+                Dashboard
               </Link>
               {/* <Link
                 href="/airdrop"
@@ -699,7 +723,7 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-5 sm:gap-6 2xl:gap-8">
             {[
               { name: "Telegram", url: "https://t.me/MleeDAO", icon: "💬" },
-              { name: "X (Twitter)", url: "https://x.com/MDAO_OFFICIAL", icon: "𝕏" },
+              { name: "X (Twitter)", url: "https://x.com/MLEEDAO", icon: "𝕏" },
               { name: "GitHub", url: "https://github.com/shenzhou-web/mlee-dao", icon: "💻" },
             ].map((link, index) => (
               <Card
@@ -823,7 +847,7 @@ export default function Home() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => window.open("https://x.com/MDAO_OFFICIAL", "_blank")}
+                      onClick={() => window.open("https://x.com/MLEEDAO", "_blank")}
                       className="border-primary bg-primary/10 text-primary hover:bg-primary/20 hover:text-white hover:shadow-lg hover:shadow-primary/25"
                     >
                       X/Twitter
@@ -853,6 +877,14 @@ export default function Home() {
             <div className="text-center md:text-right">
               <p className="text-gray-400 text-sm">© {new Date().getFullYear()} MLEE DAO. All rights reserved.</p>
               <p className="text-gray-500 text-xs mt-1">Built on BNB Smart Chain</p>
+              <div className="mt-3 flex items-center justify-center gap-4 text-xs text-gray-400 md:justify-end">
+                <Link href="/terms" className="hover:text-white transition-colors">
+                  Terms
+                </Link>
+                <Link href="/privacy" className="hover:text-white transition-colors">
+                  Privacy
+                </Link>
+              </div>
             </div>
           </div>
         </div>

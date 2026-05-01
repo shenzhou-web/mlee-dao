@@ -9,7 +9,11 @@ import {
 } from "wagmi";
 import { MDAO_PRESALE_ABI } from "@/lib/abi";
 import { ERC20_ABI } from "@/lib/erc20-abi";
-import { CONTRACTS, BSC_MAINNET } from "@/lib/contracts";
+import {
+  ACTIVE_CHAIN_CONFIG,
+  ACTIVE_PRESALE_CONTRACT,
+  ACTIVE_USDT_ADDRESS,
+} from "@/lib/contracts";
 import { parseUSDT } from "@/lib/utils";
 
 export type TxStep =
@@ -80,25 +84,17 @@ export function useBuyTokens() {
       try {
         const rawAmount = parseUSDT(usdtAmount);
 
-        if (chainId !== BSC_MAINNET.id) {
-          setTxError("Please switch to BNB Smart Chain (Mainnet).");
-          setStep("error");
-          return;
-        }
-
-        const usdtAddress = CONTRACTS.USDT_MAINNET;
-
-        if (chainId !== BSC_MAINNET.id) {
-          setTxError("Please switch to BNB Smart Chain (Mainnet).");
+        if (chainId !== ACTIVE_CHAIN_CONFIG.id) {
+          setTxError(`Please switch to ${ACTIVE_CHAIN_CONFIG.name}.`);
           setStep("error");
           return;
         }
 
         const hash = await writeContractAsync({
-          address: usdtAddress,
+          address: ACTIVE_USDT_ADDRESS,
           abi: ERC20_ABI,
           functionName: "approve",
-          args: [CONTRACTS.PRESALE, rawAmount],
+          args: [ACTIVE_PRESALE_CONTRACT, rawAmount],
         });
 
         setApproveTxHash(hash);
@@ -125,7 +121,7 @@ export function useBuyTokens() {
         const rawAmount = parseUSDT(usdtAmount);
 
         const hash = await writeContractAsync({
-          address: CONTRACTS.PRESALE,
+          address: ACTIVE_PRESALE_CONTRACT,
           abi: MDAO_PRESALE_ABI,
           functionName: "buyTokens",
           args: [rawAmount],
@@ -189,7 +185,7 @@ export function useClaimTokens() {
 
     try {
       const hash = await writeContractAsync({
-        address: CONTRACTS.PRESALE,
+        address: ACTIVE_PRESALE_CONTRACT,
         abi: MDAO_PRESALE_ABI,
         functionName: "claimTokens",
         args: [],

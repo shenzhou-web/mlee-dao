@@ -8,12 +8,18 @@
 export const CONTRACTS = {
   // ⚠️  Replace with your deployed contract address after deployment
   PRESALE: "0x92a7782fD1c113A470fd0CB5023c7f1712067e40" as `0x${string}`,
+  PARTNERSHIP: "0x8956482ce6d48BA5353E629A41A6FF59bf01f20f" as `0x${string}`,
 
   // USDT on BNB Smart Chain (official address — do NOT change)
   USDT_MAINNET: "0x55d398326f99059fF775485246999027B3197955" as `0x${string}`,
+  USDC_MAINNET: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d" as `0x${string}`,
   // USDT on BSC Testnet (use this while testing)
   USDT_TESTNET: "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd" as `0x${string}`,
 } as const;
+
+const useTestnetEnv = process.env.NEXT_PUBLIC_USE_TESTNET?.trim().toLowerCase();
+
+export const IS_TESTNET = useTestnetEnv === "true";
 
 // ─────────────────────────────────────────────────────────────────
 // CHAIN CONFIGURATION
@@ -44,6 +50,17 @@ export const BSC_TESTNET = {
     default: { name: "BscScan Testnet", url: "https://testnet.bscscan.com" },
   },
 } as const;
+
+export const ACTIVE_CHAIN_CONFIG = IS_TESTNET ? BSC_TESTNET : BSC_MAINNET;
+
+export const ACTIVE_PRESALE_CONTRACT =
+  (process.env.NEXT_PUBLIC_PRESALE_CONTRACT_ADDRESS as
+    | `0x${string}`
+    | undefined) ?? CONTRACTS.PRESALE;
+
+export const ACTIVE_USDT_ADDRESS = IS_TESTNET
+  ? CONTRACTS.USDT_TESTNET
+  : CONTRACTS.USDT_MAINNET;
 
 // ─────────────────────────────────────────────────────────────────
 // CONTRACT CONSTANTS (mirrors Solidity)

@@ -3,7 +3,7 @@
 import { useReadContracts, useAccount } from "wagmi";
 import { MDAO_PRESALE_ABI } from "@/lib/abi";
 import { ERC20_ABI } from "@/lib/erc20-abi";
-import { CONTRACTS } from "@/lib/contracts";
+import { ACTIVE_PRESALE_CONTRACT, ACTIVE_USDT_ADDRESS } from "@/lib/contracts";
 import {
   formatMDAO,
   formatUSDT,
@@ -17,14 +17,14 @@ import {
  */
 export function useUserData() {
   const { address, isConnected } = useAccount();
-  const usdtAddress = CONTRACTS.USDT_MAINNET;
+  const usdtAddress = ACTIVE_USDT_ADDRESS;
 
   const { data, isLoading, refetch } = useReadContracts({
     contracts: address
       ? [
           // User's presale allocation & vesting info
           {
-            address: CONTRACTS.PRESALE,
+            address: ACTIVE_PRESALE_CONTRACT,
             abi: MDAO_PRESALE_ABI,
             functionName: "getUserInfo",
             args: [address],
@@ -41,7 +41,7 @@ export function useUserData() {
             address: usdtAddress,
             abi: ERC20_ABI,
             functionName: "allowance",
-            args: [address, CONTRACTS.PRESALE],
+            args: [address, ACTIVE_PRESALE_CONTRACT],
           },
         ]
       : [],

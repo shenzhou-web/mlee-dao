@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-// import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteFooter } from "@/components/layout/site-footer";
 
 type LegalSection = {
   title: string;
@@ -33,9 +33,9 @@ export function LegalShell({
               Presale
             </Link>
             <span>/</span>
-            {/* <Link href="/partnership" className="transition-colors hover:text-white">
+            <Link href="/partnership" className="transition-colors hover:text-white">
               Partnership
-            </Link> */}
+            </Link>
           </div>
 
           <div className="mt-12 max-w-3xl">
@@ -89,7 +89,7 @@ export function LegalShell({
         </div>
       </section>
 
-      {/* <SiteFooter /> */}
+      <SiteFooter />
     </main>
   );
 }
