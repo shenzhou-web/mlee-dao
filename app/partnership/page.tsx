@@ -53,6 +53,7 @@ import {
   verifyPartnershipId,
 } from "@/lib/partnership-api";
 import { cn, getAddressLink, getTxLink, shortenAddress } from "@/lib/utils";
+import { clearWalletReturnPath, saveWalletReturnPath } from "@/lib/wallet-return";
 
 type NavItem = { label: string; href: string };
 type UploadValue = File | null;
@@ -72,6 +73,24 @@ type ApplicationSuccess = {
   referenceNumber: string;
   email: string;
 };
+
+type VerifiedApplicant = {
+  applicantType: PartnershipApplicantType;
+  walletAddress: `0x${string}`;
+  lockTier: number;
+  amount: number;
+  email: string;
+};
+
+type PartnershipOnboardingSession = {
+  verifyStage?: ReviewStep;
+  verifyId?: string;
+  verifiedApplicant?: VerifiedApplicant | null;
+  approveHash?: `0x${string}`;
+  onboardHash?: `0x${string}`;
+};
+
+type WalletRequestKind = "approve" | "onboard";
 
 const SITE_NAV: NavItem[] = [
   { label: "Dashboard", href: "/dashboard" },
@@ -121,6 +140,62 @@ const FEE_SPLIT = [
 
 const VERIFY_STEPS = ["Enter ID", "Connect Wallet", "Configure", "Confirm & Pay"] as const;
 const APPLY_STEPS = ["Profile", "Documents", "Investment", "Confirm"] as const;
+const PARTNERSHIP_ONBOARDING_SESSION_KEY = "mdao_partnership_onboarding";
+const WALLET_REQUEST_TIMEOUT_MS = 90_000;
+
+function readPartnershipOnboardingSession() {
+  if (typeof window === "undefined") return null;
+
+  const read = (type: "localStorage" | "sessionStorage") => {
+    try {
+      const raw = window[type].getItem(PARTNERSHIP_ONBOARDING_SESSION_KEY);
+      return raw ? (JSON.parse(raw) as PartnershipOnboardingSession) : null;
+    } catch {
+      window[type].removeItem(PARTNERSHIP_ONBOARDING_SESSION_KEY);
+      return null;
+    }
+  };
+
+  return read("localStorage") ?? read("sessionStorage");
+}
+
+function writePartnershipOnboardingSession(payload: PartnershipOnboardingSession) {
+  if (typeof window === "undefined") return;
+  const value = JSON.stringify(payload);
+  window.localStorage.setItem(PARTNERSHIP_ONBOARDING_SESSION_KEY, value);
+  window.sessionStorage.setItem(PARTNERSHIP_ONBOARDING_SESSION_KEY, value);
+}
+
+function clearPartnershipOnboardingSession() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(PARTNERSHIP_ONBOARDING_SESSION_KEY);
+  window.sessionStorage.removeItem(PARTNERSHIP_ONBOARDING_SESSION_KEY);
+}
+
+async function waitForWalletRequest<T>(request: Promise<T>) {
+  return Promise.race([
+    request,
+    new Promise<T>((_, reject) => {
+      window.setTimeout(() => {
+        reject(new Error("wallet_request_timeout"));
+      }, WALLET_REQUEST_TIMEOUT_MS);
+    }),
+  ]);
+}
+
+function getWalletRequestError(message: string, action: string) {
+  const lowerMessage = message.toLowerCase();
+
+  if (lowerMessage.includes("rejected") || lowerMessage.includes("denied") || lowerMessage.includes("cancelled")) {
+    return `${action[0].toUpperCase()}${action.slice(1)} cancelled. Click to try again.`;
+  }
+
+  if (message === "wallet_request_timeout") {
+    return `Your wallet did not respond to the ${action} request. Open your wallet and check for a pending request. If nothing appears, disconnect and scan the QR code again.`;
+  }
+
+  return `Unable to start the ${action} transaction. Open your wallet and try again.`;
+}
 
 // ─── Shared layout primitives ────────────────────────────────────────────────
 
@@ -337,18 +412,13 @@ export default function PartnershipPage() {
   const [verifyId, setVerifyId] = useState("");
   const [verifyState, setVerifyState] = useState<VerifyState>("idle");
   const [verifyMessage, setVerifyMessage] = useState<string | null>(null);
-  const [verifiedApplicant, setVerifiedApplicant] = useState<{
-    applicantType: PartnershipApplicantType;
-    walletAddress: `0x${string}`;
-    lockTier: number;
-    amount: number;
-    email: string;
-  } | null>(null);
+  const [verifiedApplicant, setVerifiedApplicant] = useState<VerifiedApplicant | null>(null);
 
   const [approveHash, setApproveHash] = useState<`0x${string}` | undefined>();
   const [onboardHash, setOnboardHash] = useState<`0x${string}` | undefined>();
   const [approvalError, setApprovalError] = useState<string | null>(null);
   const [onboardError, setOnboardError] = useState<string | null>(null);
+  const [walletRequestPending, setWalletRequestPending] = useState<WalletRequestKind | null>(null);
 
   const [companyForm, setCompanyForm] = useState({
     legalCompanyName: "", country: "", registrationNumber: "",
@@ -418,6 +488,11 @@ export default function PartnershipPage() {
   const isAmountValid =
     amountNumber !== null && !Number.isNaN(amountNumber) &&
     amountNumber >= amountLimits.min && amountNumber <= amountLimits.max;
+  const walletMatchesVerifiedApplicant =
+    !!verifiedApplicant &&
+    !!address &&
+    address.toLowerCase() === verifiedApplicant.walletAddress.toLowerCase();
+  const hasVerifiedWalletAccess = isConnected && walletMatchesVerifiedApplicant;
 
   const { data: isWhitelistedData, isLoading: isWhitelistLoading } = useReadContract({
     address: CONTRACTS.PARTNERSHIP,
@@ -429,6 +504,21 @@ export default function PartnershipPage() {
       refetchInterval: 30_000,
     },
   });
+  const hasWhitelistAccess = hasVerifiedWalletAccess && isWhitelistedData === true;
+  const { data: allowanceData } = useReadContract({
+    address: partnership.paymentToken,
+    abi: ERC20_ABI,
+    functionName: "allowance",
+    args: address && partnership.paymentToken ? [address, CONTRACTS.PARTNERSHIP] : undefined,
+    query: {
+      enabled: !!partnership.paymentToken && !!address && hasVerifiedWalletAccess && verifyStage >= 4,
+      refetchInterval: 10_000,
+    },
+  });
+  const isAllowanceSufficient =
+    typeof summary.amountRaw === "bigint" &&
+    typeof allowanceData === "bigint" &&
+    allowanceData >= summary.amountRaw;
 
   useEffect(() => {
     if (verifyStage === 2 && verifiedApplicant && isConnected && address) {
@@ -448,10 +538,70 @@ export default function PartnershipPage() {
   const approveReceipt = useWaitForTransactionReceipt({ hash: approveHash, query: { enabled: !!approveHash } });
   const onboardReceipt = useWaitForTransactionReceipt({ hash: onboardHash, query: { enabled: !!onboardHash } });
 
+  useEffect(() => {
+    const saved = readPartnershipOnboardingSession();
+    if (!saved) return;
+
+    if (saved.verifyId) setVerifyId(saved.verifyId);
+    if (saved.verifiedApplicant) setVerifiedApplicant(saved.verifiedApplicant);
+    if (saved.approveHash) setApproveHash(saved.approveHash);
+    if (saved.onboardHash) setOnboardHash(saved.onboardHash);
+    if (saved.verifyStage && saved.verifyStage >= 1 && saved.verifyStage <= 4) {
+      setVerifyStage(saved.verifyStage);
+      if (saved.verifyStage >= 2 && saved.verifiedApplicant) {
+        setVerifyState("valid");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!verifiedApplicant) return;
+
+    if (!hasVerifiedWalletAccess && verifyStage > 2) {
+      setVerifyStage(2);
+      return;
+    }
+
+    if (!hasWhitelistAccess && verifyStage > 3) {
+      setVerifyStage(3);
+    }
+  }, [verifiedApplicant, hasVerifiedWalletAccess, hasWhitelistAccess, verifyStage]);
+
+  useEffect(() => {
+    if (!verifyId.trim() && !verifiedApplicant && verifyStage === 1) {
+      clearPartnershipOnboardingSession();
+      return;
+    }
+
+    const payload: PartnershipOnboardingSession = {
+      verifyStage,
+      verifyId,
+      verifiedApplicant,
+      approveHash,
+      onboardHash,
+    };
+
+    writePartnershipOnboardingSession(payload);
+  }, [verifyStage, verifyId, verifiedApplicant, approveHash, onboardHash]);
+  useEffect(() => {
+    if (!verifyId.trim() && verifyStage === 1 && !verifiedApplicant) return;
+    saveWalletReturnPath("/partnership#verify");
+  }, [verifyId, verifyStage, verifiedApplicant]);
+
   useEffect(() => { if (approveReceipt.isSuccess) setApprovalError(null); }, [approveReceipt.isSuccess]);
+  useEffect(() => {
+    if (isAllowanceSufficient) {
+      setApprovalError(null);
+    }
+  }, [isAllowanceSufficient]);
   useEffect(() => {
     if (onboardReceipt.isSuccess && onboardHash && verifyId) markPartnershipIdConsumed(verifyId, onboardHash);
   }, [onboardReceipt.isSuccess, onboardHash, verifyId]);
+  useEffect(() => {
+    if (typeof window === "undefined" || !onboardReceipt.isSuccess) return;
+    clearPartnershipOnboardingSession();
+    clearWalletReturnPath();
+  }, [onboardReceipt.isSuccess]);
   useEffect(() => {
     setApplyStep(1);
     setFormError(null);
@@ -639,11 +789,14 @@ export default function PartnershipPage() {
   async function handleVerifyId() {
     setVerifyState("loading");
     setVerifyMessage(null);
+    saveWalletReturnPath("/partnership#verify");
     try {
       const result = await verifyPartnershipId(verifyId);
       if (result.status === "valid") {
         setVerifyState("valid");
         setVerifiedApplicant(result);
+        setApproveHash(undefined);
+        setOnboardHash(undefined);
         setVerifyStage(2);
         // setVerifyMessage("ID verified. Now connect the wallet you registered during your application.");
       } else if (result.status === "invalid") {
@@ -677,35 +830,51 @@ export default function PartnershipPage() {
   async function handleApprove() {
     if (!summary.amountRaw || !partnership.paymentToken) return;
     setApprovalError(null);
+    saveWalletReturnPath("/partnership#verify");
+    setWalletRequestPending("approve");
     try {
-      const hash = await writeContractAsync({ address: partnership.paymentToken, abi: ERC20_ABI, functionName: "approve", args: [CONTRACTS.PARTNERSHIP, summary.amountRaw] });
+      const hash = await waitForWalletRequest(
+        writeContractAsync({ address: partnership.paymentToken, abi: ERC20_ABI, functionName: "approve", args: [CONTRACTS.PARTNERSHIP, summary.amountRaw] })
+      );
       setApproveHash(hash);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "";
-      setApprovalError(message.includes("rejected") ? "Approval cancelled. Click to try again." : "Unable to start the approval transaction.");
+      setApprovalError(getWalletRequestError(message, "approval"));
+    } finally {
+      setWalletRequestPending(null);
     }
   }
 
   async function handleOnboard() {
     if (!summary.totalMdaoRaw || !verifiedApplicant) return;
     setOnboardError(null);
+    saveWalletReturnPath("/partnership#verify");
+    setWalletRequestPending("onboard");
     try {
-      const hash = await writeContractAsync({
-        address: CONTRACTS.PARTNERSHIP,
-        abi: MDAO_PARTNERSHIP_ABI,
-        functionName: verifiedApplicant.applicantType === "company" ? "onboardCompany" : "onboardIndividual",
-        args: [summary.totalMdaoRaw, approvedLockTier],
-      });
+      const hash = await waitForWalletRequest(
+        writeContractAsync({
+          address: CONTRACTS.PARTNERSHIP,
+          abi: MDAO_PARTNERSHIP_ABI,
+          functionName: verifiedApplicant.applicantType === "company" ? "onboardCompany" : "onboardIndividual",
+          args: [summary.totalMdaoRaw, approvedLockTier],
+        })
+      );
       setOnboardHash(hash);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "";
-      setOnboardError(message.includes("rejected") ? "Transaction cancelled. Click to try again." : "Unable to submit the onboarding transaction.");
+      setOnboardError(getWalletRequestError(message, "onboarding"));
+    } finally {
+      setWalletRequestPending(null);
     }
   }
 
-  const stage3Ready = verifyStage >= 3 && verifiedApplicant;
-  const approvalComplete = approveReceipt.isSuccess;
+
+  const stage3Ready = verifyStage >= 3 && verifiedApplicant && hasWhitelistAccess;
+  const stage4Ready = verifyStage === 4 && verifiedApplicant && hasWhitelistAccess;
+  const approvalComplete = approveReceipt.isSuccess || isAllowanceSufficient;
   const onboardingComplete = onboardReceipt.isSuccess;
+  const isApproveRequestPending = walletRequestPending === "approve" || approveReceipt.isLoading;
+  const isOnboardRequestPending = walletRequestPending === "onboard" || onboardReceipt.isLoading;
   return (
     <main className="min-h-screen bg-[#05070a] text-white">
       <PartnershipHeader />
@@ -770,7 +939,7 @@ export default function PartnershipPage() {
           ) : (
             <>
               {[
-                { label: "Total Companies", value: formatNumber(effectiveCompanyCount, 0) },
+                { label: "Total Companies", value: formatNumber(effectiveCompanyCount, 0), href: "/partnership/companies" },
                 { label: "Total Raised", value: totalRaisedRaw ? formatCurrency(Number(formatUnits(totalRaisedRaw, partnership.paymentTokenDecimals)), 0) : "—" },
                 {
                   label: "Token Price",
@@ -782,15 +951,22 @@ export default function PartnershipPage() {
                   value: formatTimeUntilCompanies(partnership.nextPriceIncreaseIn !== undefined ? Number(partnership.nextPriceIncreaseIn) : null),
                 },
               ].map((stat) => (
-                <div key={stat.label} className="rounded-[26px] border border-white/8 bg-white/4 p-6">
-                  <p className="flex items-center gap-2 text-sm text-white/45">
-                    {stat.label}
-                    {stat.live && (
-                      <span className="inline-flex h-2 w-2 rounded-full bg-[#2ed8a3] shadow-[0_0_14px_rgba(46,216,163,0.8)] animate-pulse" />
-                    )}
-                  </p>
-                  <p className="mt-3 text-3xl font-light text-white">{stat.value}</p>
-                </div>
+                stat.href ? (
+                  <Link key={stat.label} href={stat.href} className="rounded-[26px] border border-white/8 bg-white/4 p-6 transition hover:border-[#f0b429]/35 hover:bg-white/6">
+                    <p className="flex items-center gap-2 text-sm text-white/45">{stat.label}</p>
+                    <p className="mt-3 text-3xl font-light text-white">{stat.value}</p>
+                  </Link>
+                ) : (
+                  <div key={stat.label} className="rounded-[26px] border border-white/8 bg-white/4 p-6">
+                    <p className="flex items-center gap-2 text-sm text-white/45">
+                      {stat.label}
+                      {stat.live && (
+                        <span className="inline-flex h-2 w-2 rounded-full bg-[#2ed8a3] shadow-[0_0_14px_rgba(46,216,163,0.8)] animate-pulse" />
+                      )}
+                    </p>
+                    <p className="mt-3 text-3xl font-light text-white">{stat.value}</p>
+                  </div>
+                )
               ))}
             </>
           )}
@@ -1329,7 +1505,7 @@ export default function PartnershipPage() {
                 <p className="text-sm text-[#6b7280]">Registered wallet</p>
                 <p className="mt-1.5 font-mono text-lg font-semibold text-[#0d1117]">{shortenAddress(verifiedApplicant.walletAddress)}</p>
               </div>
-              {!isConnected && <ConnectWalletButton size="lg" />}
+              {!isConnected && <ConnectWalletButton size="lg" returnPath="/partnership#verify" />}
               {verifyMessage && (
                 <div className={cn("rounded-xl px-4 py-3 text-sm", address?.toLowerCase() !== verifiedApplicant.walletAddress.toLowerCase() ? "border border-red-200 bg-red-50 text-red-700" : "border border-amber-200 bg-amber-50 text-amber-700")}>
                   {verifyMessage}
@@ -1410,7 +1586,7 @@ export default function PartnershipPage() {
             </div>
           )}
 
-          {verifyStage === 4 && !onboardingComplete && (
+          {stage4Ready && !onboardingComplete && (
             <div className="space-y-6">
               <SummaryCard summary={summary} amountInput={approvedAmountInput} />
 
@@ -1427,19 +1603,33 @@ export default function PartnershipPage() {
                 </p>
                 <button
                   type="button"
-                  disabled={!summary.amountRaw || approveReceipt.isLoading || approvalComplete}
+                  disabled={!summary.amountRaw || isApproveRequestPending || approvalComplete}
                   onClick={handleApprove}
                   className={cn(
                     "mt-5 inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition",
                     approvalComplete
                       ? "bg-emerald-50 text-emerald-700"
-                      : "bg-[#0d1117] text-white hover:bg-[#1a2030] disabled:cursor-not-allowed disabled:opacity-40"
+                    : "bg-[#0d1117] text-white hover:bg-[#1a2030] disabled:cursor-not-allowed disabled:opacity-40"
                   )}
                 >
-                  {approveReceipt.isLoading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : approvalComplete ? <Check className="h-4 w-4" /> : null}
-                  {approveReceipt.isLoading ? "Waiting for wallet…" : approvalComplete ? "USDT Approved" : `Approve ${formatCurrency(summary.amountUsd, 0)} USDT`}
+                  {isApproveRequestPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : approvalComplete ? <Check className="h-4 w-4" /> : null}
+                  {isApproveRequestPending ? "Waiting for wallet…" : approvalComplete ? "USDT Approved" : `Approve ${formatCurrency(summary.amountUsd, 0)} USDT`}
                 </button>
+                {walletRequestPending === "approve" && (
+                  <p className="mt-3 text-sm text-[#6b7280]">
+                    Open your wallet to approve this request. Desktop QR sessions may not open the mobile app automatically.
+                  </p>
+                )}
                 {approvalError && <p className="mt-3 text-sm text-red-600">{approvalError}</p>}
+                {approvalError?.includes("did not respond") && (
+                  <button
+                    type="button"
+                    onClick={() => disconnect()}
+                    className="mt-3 inline-flex rounded-2xl border border-black/10 px-4 py-2 text-sm font-semibold text-[#0d1117]"
+                  >
+                    Disconnect and scan QR again
+                  </button>
+                )}
               </div>
 
               {/* Step 2: Onboard */}
@@ -1451,13 +1641,18 @@ export default function PartnershipPage() {
                 </p>
                 <button
                   type="button"
-                  disabled={!approvalComplete || onboardReceipt.isLoading}
+                  disabled={!approvalComplete || isOnboardRequestPending}
                   onClick={handleOnboard}
                   className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#0d1117] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1a2030] disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {onboardReceipt.isLoading && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                  {onboardReceipt.isLoading ? "Waiting for wallet…" : "Confirm Onboarding"}
+                  {isOnboardRequestPending && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                  {isOnboardRequestPending ? "Waiting for wallet…" : "Confirm Onboarding"}
                 </button>
+                {walletRequestPending === "onboard" && (
+                  <p className="mt-3 text-sm text-[#6b7280]">
+                    Open your wallet to confirm this request. If no request appears, reconnect with a fresh QR scan.
+                  </p>
+                )}
                 {onboardHash && !onboardingComplete && (
                   <p className="mt-3 text-sm text-[#6b7280]">
                     Confirming…{" "}
@@ -1467,6 +1662,15 @@ export default function PartnershipPage() {
                   </p>
                 )}
                 {onboardError && <p className="mt-3 text-sm text-red-600">{onboardError}</p>}
+                {onboardError?.includes("did not respond") && (
+                  <button
+                    type="button"
+                    onClick={() => disconnect()}
+                    className="mt-3 inline-flex rounded-2xl border border-black/10 px-4 py-2 text-sm font-semibold text-[#0d1117]"
+                  >
+                    Disconnect and scan QR again
+                  </button>
+                )}
               </div>
             </div>
           )}

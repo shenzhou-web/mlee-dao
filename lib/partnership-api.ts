@@ -50,6 +50,16 @@ export type VerifyIdResult =
   | { status: "used" }
   | { status: "refNum" };
 
+export type PublicPartnershipCompany = {
+  id: string;
+  companyName: string;
+  country: string;
+  industry: string;
+  description: string;
+  lockPeriod: number | null;
+  joinedAt: string | null;
+};
+
 const API_BASE = "https://api.iealiance.com/api";
 const STORAGE_KEY = "mdao.partnership.applications";
 
@@ -91,6 +101,54 @@ function generateReferenceNumber() {
   const year = new Date().getFullYear();
   const suffix = String(Math.floor(10000 + Math.random() * 89999));
   return `MDAO-${year}-${suffix}`;
+}
+
+function toRecord(value: unknown) {
+  return value && typeof value === "object"
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function toSafeString(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function toSafeNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function sanitizePublicCompany(
+  value: unknown,
+  index: number,
+): PublicPartnershipCompany | null {
+  const record = toRecord(value);
+  if (!record) return null;
+
+  if (record.type && record.type !== "company") return null;
+  if (record.isPublic === false) return null;
+  if (record.status && record.status !== "approved") return null;
+
+  const companyName = toSafeString(record.companyName);
+  if (!companyName) return null;
+
+  return {
+    id:
+      toSafeString(record.referenceId) ||
+      toSafeString(record.id) ||
+      toSafeString(record._id) ||
+      `company-${index}`,
+    companyName,
+    country: toSafeString(record.country) || "Global",
+    industry: toSafeString(record.industry) || "Partner company",
+    description: toSafeString(record.companyDescription).slice(0, 220),
+    lockPeriod: toSafeNumber(record.lockPeriod),
+    joinedAt: toSafeString(record.createdAt) || null,
+  };
 }
 
 export async function uploadKycDocuments(
@@ -292,6 +350,31 @@ export async function markPartnershipPaymentDone(
   if (!response.ok) {
     throw new Error("Unable to mark payment as completed");
   }
+}
+
+export async function fetchPublicPartnershipCompanies(): Promise<
+  PublicPartnershipCompany[]
+> {
+  if (!API_BASE) return [];
+
+  const response = await fetch(getApiUrl("/kyc/public/companies"));
+  if (!response.ok) throw new Error("Unable to load public companies");
+
+  const result = (await response.json()) as unknown;
+  const record = toRecord(result);
+  const items = Array.isArray(result)
+    ? result
+    : Array.isArray(record?.companies)
+      ? record.companies
+      : Array.isArray(record?.items)
+        ? record.items
+        : Array.isArray(record?.data)
+          ? record.data
+          : [];
+
+  return items
+    .map((item, index) => sanitizePublicCompany(item, index))
+    .filter((item): item is PublicPartnershipCompany => !!item);
 }
 
 export async function fetchPriceHistoryFromApi(limit = 10) {
