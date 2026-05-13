@@ -846,7 +846,7 @@ export default function PartnershipPage() {
   }
 
   async function handleOnboard() {
-    if (!summary.totalMdaoRaw || !verifiedApplicant) return;
+    if (!summary.baseMdaoRaw || !verifiedApplicant) return;
     setOnboardError(null);
     saveWalletReturnPath("/partnership#verify");
     setWalletRequestPending("onboard");
@@ -856,7 +856,7 @@ export default function PartnershipPage() {
           address: CONTRACTS.PARTNERSHIP,
           abi: MDAO_PARTNERSHIP_ABI,
           functionName: verifiedApplicant.applicantType === "company" ? "onboardCompany" : "onboardIndividual",
-          args: [summary.totalMdaoRaw, approvedLockTier],
+          args: [summary.baseMdaoRaw, approvedLockTier],
         })
       );
       setOnboardHash(hash);
