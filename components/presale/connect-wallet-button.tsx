@@ -1,16 +1,20 @@
 "use client"
 
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-import { useAccount } from "wagmi"
 import { shortenAddress } from "@/lib/utils"
+import { saveWalletReturnPath } from "@/lib/wallet-return"
 
 interface ConnectWalletButtonProps {
   size?: "sm" | "md" | "lg"
   variant?: "primary" | "header"
+  returnPath?: string
 }
 
-export function ConnectWalletButton({ size = "md", variant = "primary" }: ConnectWalletButtonProps) {
-  const { address, isConnected } = useAccount()
+export function ConnectWalletButton({ size = "md", variant = "primary", returnPath }: ConnectWalletButtonProps) {
+  const handleOpenConnectModal = (openConnectModal: () => void) => {
+    saveWalletReturnPath(returnPath)
+    openConnectModal()
+  }
 
   const sizeStyles = {
     sm: { padding: "0.6rem 1.2rem", fontSize: "0.85rem" },
@@ -28,7 +32,7 @@ export function ConnectWalletButton({ size = "md", variant = "primary" }: Connec
 
         if (!connected) {
           return (
-            <button onClick={openConnectModal}
+            <button onClick={() => handleOpenConnectModal(openConnectModal)}
               className={`relative inline-flex items-center justify-center gap-2 rounded-xl font-bold uppercase overflow-hidden transition-all duration-300 ${variant === "header" ? "btn-outline-gold" : "btn-wallet"}`}
               style={{
                 fontFamily: "'Bebas Neue', sans-serif",

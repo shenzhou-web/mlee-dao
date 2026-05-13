@@ -28,7 +28,8 @@ export function BuyTokens() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setMounted(true)
+    const timeout = window.setTimeout(() => setMounted(true), 0)
+    return () => window.clearTimeout(timeout)
   }, [])
 
   const usdtAmount  = parseFloat(inputAmount) || 0
@@ -41,10 +42,20 @@ export function BuyTokens() {
 
   const isValid   = usdtAmount >= minUsdt && usdtAmount > 0 && usdtAmount <= MAX_PURCHASE_USDT && mdaoReceive <= remainingAllocation
   const isAlreadyApproved = allowanceRaw ? Number(allowanceRaw) / 10 ** USDT_DECIMALS >= usdtAmount : false
-  const needsApprove = isValid && !isAlreadyApproved
 
   const isSupportedChain = chainId === ACTIVE_CHAIN_CONFIG.id
   const canBuy  = isValid && (isAlreadyApproved || step === "approved") && isConnected && isActive && isSupportedChain
+  const isWaitingForApproveWallet = isApproving && !approveTxHash
+  const isWaitingForBuyWallet = isBuying && !buyTxHash
+  const pendingMessage = isWaitingForApproveWallet
+    ? "Waiting for your wallet to show the USDT approval request. QR wallet sessions can take a little longer, so keep your mobile wallet open."
+    : isWaitingForBuyWallet
+      ? "Waiting for your wallet to show the purchase request. QR wallet sessions can take a little longer, so keep your mobile wallet open."
+      : isApproving
+        ? "Approval submitted. Waiting for BNB Chain confirmation."
+        : isBuying
+          ? "Purchase submitted. Waiting for BNB Chain confirmation."
+          : null
 
   const handleApprove = () => approve(usdtAmount)
   const handleBuy     = async () => {
@@ -192,7 +203,9 @@ export function BuyTokens() {
             className="rounded-xl py-4 text-sm font-bold uppercase tracking-wider transition-all duration-300 btn-outline-gold disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ fontFamily: "'Rajdhani', sans-serif", letterSpacing: "0.1em" }}>
             {isApproving
-              ? "⏳ Approving..."
+              ? isWaitingForApproveWallet
+                ? "Waiting for wallet..."
+                : "Confirming Approval..."
               : isAlreadyApproved
               ? "✓ Approved"
               : "✓ Approve USDT"}
@@ -203,7 +216,7 @@ export function BuyTokens() {
             disabled={!canBuy || isBuying || isApproving}
             className="rounded-xl py-4 text-sm font-bold uppercase tracking-wider btn-gold disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ fontFamily: "'Rajdhani', sans-serif", letterSpacing: "0.1em" }}>
-            {isBuying ? "⏳ Buying..." : "🚀 Buy Tokens"}
+            {isBuying ? isWaitingForBuyWallet ? "Waiting for wallet..." : "Confirming Purchase..." : "🚀 Buy Tokens"}
           </button>
         </div>
       )}
@@ -217,9 +230,10 @@ export function BuyTokens() {
         </div>
       )}
 
-      {(isApproving || isBuying) && (
-        <div className="text-center text-xs" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "'Rajdhani', sans-serif" }}>
-          ⏳ Transaction pending… please confirm in your wallet.
+      {pendingMessage && (
+        <div className="rounded-lg p-3 text-center text-xs leading-5"
+          style={{ background: "rgba(240,180,41,0.06)", border: "1px solid rgba(240,180,41,0.16)", color: "rgba(255,255,255,0.55)", fontFamily: "'Rajdhani', sans-serif" }}>
+          {pendingMessage}
         </div>
       )}
 
