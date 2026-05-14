@@ -10,14 +10,14 @@ MLEE DAO emphasizes simplicity, transparency, and long-term sustainability. Buil
 
 ## Token Information
 
-| Property | Details |
-|----------|---------|
-| **Token Name** | MLEE DAO |
-| **Symbol** | MDAO |
-| **Network** | BNB Chain (BSC) |
-| **Token Standard** | BEP-20 |
-| **Total Supply** | 18,000,000,000 MDAO |
-| **Decimals** | 18 |
+| Property             | Details                                      |
+| -------------------- | -------------------------------------------- |
+| **Token Name**       | MLEE DAO                                     |
+| **Symbol**           | MDAO                                         |
+| **Network**          | BNB Chain (BSC)                              |
+| **Token Standard**   | BEP-20                                       |
+| **Total Supply**     | 18,000,000,000 MDAO                          |
+| **Decimals**         | 18                                           |
 | **Contract Address** | `0xC4bF2518AA953304170753388F83277Eb9588a7A` |
 
 ### Contract Verification
@@ -39,24 +39,28 @@ MLEE DAO emphasizes simplicity, transparency, and long-term sustainability. Buil
 ## Roadmap
 
 ### Phase 1: Token Launch ✅ COMPLETED
+
 - Smart contract deployment
 - BscScan verification
 - Website launch
 - Community establishment
 
 ### Phase 2: Liquidity Establishment 🔄 IN PROGRESS
+
 - Initial liquidity provisioning
 - Exchange listings
 - Trading pair establishment
 - Market maker partnerships
 
 ### Phase 3: Governance Framework 📋 UPCOMING
+
 - On-chain voting mechanism implementation
 - DAO structure development
 - Proposal system creation
 - Community governance activation
 
 ### Phase 4: Ecosystem Expansion 📋 UPCOMING
+
 - Strategic partnerships
 - DeFi protocol integrations
 - Cross-chain bridge exploration
@@ -84,12 +88,14 @@ This project is built with modern web technologies:
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd mlee-dao-website
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 # or
@@ -97,6 +103,7 @@ yarn install
 ```
 
 3. Run the development server:
+
 ```bash
 npm run dev
 # or
@@ -143,13 +150,6 @@ mlee-dao-website/
 - **Website**: [https://mleedao.com](https://mleedao.com)
 - **Email**: admin@mleedao.com
 - **BscScan**: [View Contract](https://bscscan.com/token/0xC4bF2518AA953304170753388F83277Eb9588a7A)
-
-## Team
-
-### Muhammad Dawood
-**Founder & Lead Developer**
-
-Blockchain enthusiast building transparent, community-driven solutions on BNB Chain. Committed to creating sustainable DeFi ecosystems with emphasis on security and community governance.
 
 ## Security
 
