@@ -29,9 +29,11 @@ const CUSTOM_WALLET_ICON =
 const CUSTOM_WALLET_MOBILE_LINK =
   process.env.NEXT_PUBLIC_CUSTOM_WALLET_MOBILE_LINK?.trim() || "valorup://wc";
 const CUSTOM_WALLET_IOS_URL =
-  process.env.NEXT_PUBLIC_CUSTOM_WALLET_APP_STORE_URL?.trim();
+  process.env.NEXT_PUBLIC_CUSTOM_WALLET_APP_STORE_URL?.trim() ||
+  "https://apps.apple.com/us/app/valorup/id6753202163";
 const CUSTOM_WALLET_ANDROID_URL =
-  process.env.NEXT_PUBLIC_CUSTOM_WALLET_PLAY_STORE_URL?.trim();
+  process.env.NEXT_PUBLIC_CUSTOM_WALLET_PLAY_STORE_URL?.trim() ||
+  "https://play.google.com/store/apps/details?id=com.shenzhouapp.shenzhoucapitalapp&pli=1";
 
 function getValorUpWalletConnectUri(uri: string, includeRedirect = false) {
   const base = `${CUSTOM_WALLET_MOBILE_LINK}${

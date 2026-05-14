@@ -12,6 +12,7 @@ import {
 import { http } from "wagmi";
 import { bsc, bscTestnet } from "wagmi/chains";
 import { ACTIVE_CHAIN_CONFIG, IS_TESTNET } from "@/lib/contracts";
+import { customValorUpWallet } from "@/lib/custom-wallet";
 
 export const ACTIVE_CHAIN = {
   ...(IS_TESTNET ? bscTestnet : bsc),
@@ -38,6 +39,7 @@ export const wagmiConfig = getDefaultConfig({
     {
       groupName: "Popular",
       wallets: [
+        customValorUpWallet,
         metaMaskWallet,
         trustWallet,
         walletConnectWallet,

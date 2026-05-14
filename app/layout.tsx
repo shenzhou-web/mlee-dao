@@ -1,12 +1,9 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import "@rainbow-me/rainbowkit/styles.css"
 import Web3Providers from "@/components/web3Providers"
-
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+import { WalletReturnGuard } from "@/components/wallet-return-guard"
 
 export const metadata: Metadata = {
   title: "MLEE DAO - Decentralized Governance Token on BNB Chain",
@@ -51,7 +48,10 @@ twq('config','rabuw');
         {/* End X conversion tracking base code */}
       </head>
       <body className={`font-sans antialiased`}>
-        <Web3Providers>{children}</Web3Providers>
+        <Web3Providers>
+          <WalletReturnGuard />
+          {children}
+        </Web3Providers>
       </body>
     </html>
   )
