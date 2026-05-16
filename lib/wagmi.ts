@@ -49,14 +49,6 @@ export const wagmiConfig = getDefaultConfig({
       ],
     },
   ],
-  walletConnectParameters: {
-    metadata: {
-      name: "MLEE DAO (MDAO)",
-      description: "MDAO Token",
-      url: appUrl,
-      icons: [appIcon],
-    },
-  },
   chains: wagmiChains,
   transports: {
     [ACTIVE_CHAIN.id]: http(ACTIVE_CHAIN.rpcUrls.default.http[0]),

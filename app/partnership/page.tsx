@@ -419,6 +419,7 @@ export default function PartnershipPage() {
   const [approvalError, setApprovalError] = useState<string | null>(null);
   const [onboardError, setOnboardError] = useState<string | null>(null);
   const [walletRequestPending, setWalletRequestPending] = useState<WalletRequestKind | null>(null);
+  const [walletPendingElapsedMs, setWalletPendingElapsedMs] = useState(0);
 
   const [companyForm, setCompanyForm] = useState({
     legalCompanyName: "", country: "", registrationNumber: "",
@@ -830,6 +831,7 @@ export default function PartnershipPage() {
   async function handleApprove() {
     if (!summary.amountRaw || !partnership.paymentToken) return;
     setApprovalError(null);
+    setWalletPendingElapsedMs(0);
     saveWalletReturnPath("/partnership#verify");
     setWalletRequestPending("approve");
     try {
@@ -848,6 +850,7 @@ export default function PartnershipPage() {
   async function handleOnboard() {
     if (!summary.baseMdaoRaw || !verifiedApplicant) return;
     setOnboardError(null);
+    setWalletPendingElapsedMs(0);
     saveWalletReturnPath("/partnership#verify");
     setWalletRequestPending("onboard");
     try {
@@ -875,6 +878,40 @@ export default function PartnershipPage() {
   const onboardingComplete = onboardReceipt.isSuccess;
   const isApproveRequestPending = walletRequestPending === "approve" || approveReceipt.isLoading;
   const isOnboardRequestPending = walletRequestPending === "onboard" || onboardReceipt.isLoading;
+  const partnershipPendingStage = walletRequestPending
+    ? "Waiting for wallet request"
+    : approveReceipt.isLoading || onboardReceipt.isLoading
+      ? "Request sent. Confirming on BNB Chain"
+      : null;
+  const partnershipPendingMessage = walletRequestPending === "approve"
+    ? "Open your wallet to approve this request. Desktop QR sessions may not open the mobile app automatically."
+    : walletRequestPending === "onboard"
+      ? "Open your wallet to confirm this request. If no request appears, reconnect with a fresh QR scan."
+      : approveReceipt.isLoading
+        ? "Approval submitted. Waiting for BNB Chain confirmation."
+        : onboardReceipt.isLoading
+          ? "Onboarding submitted. Waiting for BNB Chain confirmation."
+          : null;
+  const partnershipPendingProgress = walletRequestPending
+    ? walletPendingElapsedMs < 18000
+      ? Math.min(12 + walletPendingElapsedMs / 450, 78)
+      : Math.min(78 + (walletPendingElapsedMs - 18000) / 3000, 92)
+    : approveReceipt.isLoading || onboardReceipt.isLoading
+      ? walletPendingElapsedMs < 12000
+        ? Math.min(82 + walletPendingElapsedMs / 470, 96)
+        : Math.min(96 + (walletPendingElapsedMs - 12000) / 8000, 99)
+      : 0;
+  const showPartnershipSupport = walletPendingElapsedMs >= 300000;
+
+  useEffect(() => {
+    if (!walletRequestPending && !approveReceipt.isLoading && !onboardReceipt.isLoading) return;
+
+    const timer = window.setInterval(() => {
+      setWalletPendingElapsedMs((current) => current + 300);
+    }, 300);
+
+    return () => window.clearInterval(timer);
+  }, [approveReceipt.isLoading, onboardReceipt.isLoading, walletRequestPending]);
   return (
     <main className="min-h-screen bg-[#05070a] text-white">
       <PartnershipHeader />
@@ -1615,10 +1652,40 @@ export default function PartnershipPage() {
                   {isApproveRequestPending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : approvalComplete ? <Check className="h-4 w-4" /> : null}
                   {isApproveRequestPending ? "Waiting for wallet…" : approvalComplete ? "USDT Approved" : `Approve ${formatCurrency(summary.amountUsd, 0)} USDT`}
                 </button>
-                {walletRequestPending === "approve" && (
-                  <p className="mt-3 text-sm text-[#6b7280]">
-                    Open your wallet to approve this request. Desktop QR sessions may not open the mobile app automatically.
-                  </p>
+                {(walletRequestPending === "approve" || approveReceipt.isLoading) && (
+                  <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4">
+                    <div className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-[#b7791f]">
+                      <span>{partnershipPendingStage ?? "Processing request"}</span>
+                      <span>{Math.round(partnershipPendingProgress)}%</span>
+                    </div>
+                    <div className="mb-2 grid gap-1 text-[11px] text-[#8f6a1b]">
+                      <span>✅ Wallet request started</span>
+                      <span>{approveHash ? "✅ Transaction signed" : "⏳ Waiting for wallet confirmation..."}</span>
+                      <span>{approveReceipt.isLoading ? "⏳ Confirming on BNB Chain..." : "• Confirming on BNB Chain"}</span>
+                    </div>
+                    <p className="mb-2 text-[11px] text-[#8f6a1b]">
+                      This usually takes 1-2 minutes.
+                    </p>
+                    <p className="mb-2 rounded-md bg-red-50 px-2 py-1 text-[11px] text-red-700">
+                      Keep this page open. Closing it won&apos;t cancel your transaction.
+                    </p>
+                    <div className="h-2 overflow-hidden rounded-full bg-black/8">
+                      <div
+                        className="h-full rounded-full animate-pulse transition-[width] duration-700 ease-out"
+                        style={{
+                          width: `${partnershipPendingProgress}%`,
+                          background: "linear-gradient(90deg, rgba(240,180,41,0.72) 0%, rgba(240,180,41,0.96) 55%, rgba(46,216,163,0.9) 100%)",
+                          boxShadow: "0 0 18px rgba(240,180,41,0.24)",
+                        }}
+                      />
+                    </div>
+                    <p className="mt-3 text-sm text-[#6b7280]">{partnershipPendingMessage}</p>
+                    {showPartnershipSupport && (
+                      <a href={`mailto:${PARTNERSHIP_CONTACT_EMAIL}`} className="mt-3 inline-block text-sm underline text-[#0d1117]">
+                        Taking longer than usual? Contact support
+                      </a>
+                    )}
+                  </div>
                 )}
                 {approvalError && <p className="mt-3 text-sm text-red-600">{approvalError}</p>}
                 {approvalError?.includes("did not respond") && (
@@ -1648,10 +1715,40 @@ export default function PartnershipPage() {
                   {isOnboardRequestPending && <LoaderCircle className="h-4 w-4 animate-spin" />}
                   {isOnboardRequestPending ? "Waiting for wallet…" : "Confirm Onboarding"}
                 </button>
-                {walletRequestPending === "onboard" && (
-                  <p className="mt-3 text-sm text-[#6b7280]">
-                    Open your wallet to confirm this request. If no request appears, reconnect with a fresh QR scan.
-                  </p>
+                {(walletRequestPending === "onboard" || onboardReceipt.isLoading) && (
+                  <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4">
+                    <div className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-[0.18em] text-[#b7791f]">
+                      <span>{partnershipPendingStage ?? "Processing request"}</span>
+                      <span>{Math.round(partnershipPendingProgress)}%</span>
+                    </div>
+                    <div className="mb-2 grid gap-1 text-[11px] text-[#8f6a1b]">
+                      <span>✅ Wallet request started</span>
+                      <span>{onboardHash ? "✅ Transaction signed" : "⏳ Waiting for wallet confirmation..."}</span>
+                      <span>{onboardReceipt.isLoading ? "⏳ Confirming on BNB Chain..." : "• Confirming on BNB Chain"}</span>
+                    </div>
+                    <p className="mb-2 text-[11px] text-[#8f6a1b]">
+                      This usually takes 1-2 minutes.
+                    </p>
+                    <p className="mb-2 rounded-md bg-red-50 px-2 py-1 text-[11px] text-red-700">
+                      Keep this page open. Closing it won&apos;t cancel your transaction.
+                    </p>
+                    <div className="h-2 overflow-hidden rounded-full bg-black/8">
+                      <div
+                        className="h-full rounded-full animate-pulse transition-[width] duration-700 ease-out"
+                        style={{
+                          width: `${partnershipPendingProgress}%`,
+                          background: "linear-gradient(90deg, rgba(240,180,41,0.72) 0%, rgba(240,180,41,0.96) 55%, rgba(46,216,163,0.9) 100%)",
+                          boxShadow: "0 0 18px rgba(240,180,41,0.24)",
+                        }}
+                      />
+                    </div>
+                    <p className="mt-3 text-sm text-[#6b7280]">{partnershipPendingMessage}</p>
+                    {showPartnershipSupport && (
+                      <a href={`mailto:${PARTNERSHIP_CONTACT_EMAIL}`} className="mt-3 inline-block text-sm underline text-[#0d1117]">
+                        Taking longer than usual? Contact support
+                      </a>
+                    )}
+                  </div>
                 )}
                 {onboardHash && !onboardingComplete && (
                   <p className="mt-3 text-sm text-[#6b7280]">

@@ -1,5 +1,4 @@
 "use client";
-
 import type {
   RainbowKitWalletConnectParameters,
   Wallet,
@@ -13,7 +12,6 @@ type CustomWalletOptions = {
   projectId: string;
   walletConnectParameters?: RainbowKitWalletConnectParameters;
 };
-
 type CustomWalletFactory = (options: CustomWalletOptions) => Wallet;
 
 const CUSTOM_WALLET_NAME =
@@ -28,6 +26,8 @@ const CUSTOM_WALLET_ICON =
   "/valorup-wallet.svg";
 const CUSTOM_WALLET_MOBILE_LINK =
   process.env.NEXT_PUBLIC_CUSTOM_WALLET_MOBILE_LINK?.trim() || "valorup://wc";
+const CUSTOM_WALLET_ANDROID_MOBILE_LINK =
+  process.env.NEXT_PUBLIC_CUSTOM_WALLET_ANDROID_MOBILE_LINK?.trim();
 const CUSTOM_WALLET_IOS_URL =
   process.env.NEXT_PUBLIC_CUSTOM_WALLET_APP_STORE_URL?.trim() ||
   "https://apps.apple.com/us/app/valorup/id6753202163";
@@ -35,13 +35,22 @@ const CUSTOM_WALLET_ANDROID_URL =
   process.env.NEXT_PUBLIC_CUSTOM_WALLET_PLAY_STORE_URL?.trim() ||
   "https://play.google.com/store/apps/details?id=com.shenzhouapp.shenzhoucapitalapp&pli=1";
 
-function getValorUpWalletConnectUri(uri: string, includeRedirect = false) {
-  const base = `${CUSTOM_WALLET_MOBILE_LINK}${
-    CUSTOM_WALLET_MOBILE_LINK.includes("?") ? "&" : "?"
+export function isIOS() {
+  if (typeof window === "undefined") return false;
+  return /iPhone|iPad|iPod/i.test(window.navigator.userAgent || "");
+}
+
+function getValorUpWalletConnectUri(uri: string) {
+  const mobileLink = !isIOS()
+    ? CUSTOM_WALLET_ANDROID_MOBILE_LINK || CUSTOM_WALLET_MOBILE_LINK
+    : CUSTOM_WALLET_MOBILE_LINK;
+
+  const base = `${mobileLink}${
+    mobileLink.includes("?") ? "&" : "?"
   }uri=${encodeURIComponent(uri)}`;
 
-  if (!includeRedirect || typeof window === "undefined") return base;
-
+  // Android only: add redirectUrl
+  if (typeof window === "undefined" || isIOS()) return base;
   return `${base}&redirectUrl=${encodeURIComponent(window.location.href)}`;
 }
 
@@ -56,7 +65,9 @@ function createWalletConnectConnector({
 }) {
   const customStoragePrefix =
     process.env.NEXT_PUBLIC_CUSTOM_WALLET_STORAGE_PREFIX?.trim() ||
-    `valorup-${process.env.NEXT_PUBLIC_USE_TESTNET === "true" ? "testnet" : "mainnet"}`;
+    `valorup-${
+      process.env.NEXT_PUBLIC_USE_TESTNET === "true" ? "testnet" : "mainnet"
+    }`;
 
   return createConnector((config) => ({
     ...walletConnect({
@@ -90,7 +101,15 @@ export const customValorUpWallet: CustomWalletFactory = ({
   mobile: {
     getUri: (uri) => {
       saveWalletReturnPath();
-      return getValorUpWalletConnectUri(uri, true);
+      const deepLink = getValorUpWalletConnectUri(uri);
+
+      // iOS: use location.href — window.open blank tab causes confusion
+      // This works because RainbowKit calls getUri close enough to the tap
+      if (isIOS()) {
+        window.location.href = deepLink;
+      }
+
+      return deepLink;
     },
   },
   qrCode: {

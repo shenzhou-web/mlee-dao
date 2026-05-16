@@ -14,6 +14,11 @@ import {
   ACTIVE_PRESALE_CONTRACT,
   ACTIVE_USDT_ADDRESS,
 } from "@/lib/contracts";
+import {
+  canAutoOpenCustomWallet,
+  isCustomWalletConnector,
+  openCustomWalletApp,
+} from "@/lib/custom-wallet-launch";
 import { parseUSDT } from "@/lib/utils";
 
 export type TxStep =
@@ -34,8 +39,9 @@ export type TxStep =
  *   const { step, approve, buy, txHash, error, reset } = useBuyTokens()
  */
 export function useBuyTokens() {
-  const { address } = useAccount();
+  const { address, connector } = useAccount();
   const chainId = useChainId();
+  const connectorId = connector?.id;
   const [step, setStep] = useState<TxStep>("idle");
   const [approveTxHash, setApproveTxHash] = useState<
     `0x${string}` | undefined
@@ -90,6 +96,11 @@ export function useBuyTokens() {
           return;
         }
 
+        if (isCustomWalletConnector(connectorId) && canAutoOpenCustomWallet()) {
+          openCustomWalletApp();
+          await new Promise((resolve) => window.setTimeout(resolve, 250));
+        }
+
         const hash = await writeContractAsync({
           address: ACTIVE_USDT_ADDRESS,
           abi: ERC20_ABI,
@@ -104,7 +115,7 @@ export function useBuyTokens() {
         setStep("error");
       }
     },
-    [address, writeContractAsync],
+    [address, chainId, connectorId, writeContractAsync],
   );
 
   /**
@@ -120,6 +131,11 @@ export function useBuyTokens() {
       try {
         const rawAmount = parseUSDT(usdtAmount);
 
+        if (isCustomWalletConnector(connectorId) && canAutoOpenCustomWallet()) {
+          openCustomWalletApp();
+          await new Promise((resolve) => window.setTimeout(resolve, 250));
+        }
+
         const hash = await writeContractAsync({
           address: ACTIVE_PRESALE_CONTRACT,
           abi: MDAO_PRESALE_ABI,
@@ -134,7 +150,7 @@ export function useBuyTokens() {
         setStep("error");
       }
     },
-    [address, writeContractAsync],
+    [address, connectorId, writeContractAsync],
   );
 
   const reset = useCallback(() => {

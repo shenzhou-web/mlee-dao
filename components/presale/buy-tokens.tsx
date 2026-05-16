@@ -5,14 +5,17 @@ import { useAccount, useChainId } from "wagmi"
 import { usePresaleData } from "@/hooks/usePresaleData"
 import { useUserData } from "@/hooks/useUserData"
 import { useBuyTokens } from "@/hooks/useContractActions"
+import { canAutoOpenCustomWallet, isCustomWalletConnector, openCustomWalletApp } from "@/lib/custom-wallet-launch"
 import { calcTokensToReceive, formatTokenDisplay, getTxLink } from "@/lib/utils"
 import { ACTIVE_CHAIN_CONFIG, IS_TESTNET, MAX_PURCHASE_USDT, USDT_DECIMALS } from "@/lib/contracts"
 
 const QUICK_AMOUNTS = [50, 100, 500, 1000]
+const SUPPORT_EMAIL = "admin@mleedao.com"
 
 export function BuyTokens() {
   const [inputAmount, setInputAmount] = useState("")
-  const { isConnected } = useAccount()
+  const [pendingElapsedMs, setPendingElapsedMs] = useState(0)
+  const { isConnected, connector } = useAccount()
   const chainId = useChainId()
   const {
     priceRaw,
@@ -47,6 +50,10 @@ export function BuyTokens() {
   const canBuy  = isValid && (isAlreadyApproved || step === "approved") && isConnected && isActive && isSupportedChain
   const isWaitingForApproveWallet = isApproving && !approveTxHash
   const isWaitingForBuyWallet = isBuying && !buyTxHash
+  const isWaitingForWallet = isWaitingForApproveWallet || isWaitingForBuyWallet
+  const isConfirmingChain = (isApproving && !!approveTxHash) || (isBuying && !!buyTxHash)
+  const isUsingCustomWallet = isCustomWalletConnector(connector?.id)
+  const canOpenWallet = canAutoOpenCustomWallet()
   const pendingMessage = isWaitingForApproveWallet
     ? "Waiting for your wallet to show the USDT approval request. QR wallet sessions can take a little longer, so keep your mobile wallet open."
     : isWaitingForBuyWallet
@@ -56,9 +63,40 @@ export function BuyTokens() {
         : isBuying
           ? "Purchase submitted. Waiting for BNB Chain confirmation."
           : null
+  const pendingStageLabel = isWaitingForWallet
+    ? canOpenWallet
+      ? "Opening wallet and sending request"
+      : "Waiting for wallet request in ValorUp"
+    : isConfirmingChain
+      ? "Request sent. Confirming on BNB Chain"
+      : null
+  const pendingProgress = isWaitingForWallet
+    ? pendingElapsedMs < 18000
+      ? Math.min(12 + pendingElapsedMs / 450, 78)
+      : Math.min(78 + (pendingElapsedMs - 18000) / 3000, 92)
+    : isConfirmingChain
+      ? pendingElapsedMs < 12000
+        ? Math.min(82 + pendingElapsedMs / 470, 96)
+        : Math.min(96 + (pendingElapsedMs - 12000) / 8000, 99)
+      : 0
+  const showSupportLink = pendingElapsedMs >= 300000
 
-  const handleApprove = () => approve(usdtAmount)
+  useEffect(() => {
+    if (!pendingMessage) return
+
+    const timer = window.setInterval(() => {
+      setPendingElapsedMs((current) => current + 300)
+    }, 300)
+
+    return () => window.clearInterval(timer)
+  }, [pendingMessage])
+
+  const handleApprove = () => {
+    setPendingElapsedMs(0)
+    approve(usdtAmount)
+  }
   const handleBuy     = async () => {
+    setPendingElapsedMs(0)
     await buy(usdtAmount)
     refetchUser()
   }
@@ -233,7 +271,70 @@ export function BuyTokens() {
       {pendingMessage && (
         <div className="rounded-lg p-3 text-center text-xs leading-5"
           style={{ background: "rgba(240,180,41,0.06)", border: "1px solid rgba(240,180,41,0.16)", color: "rgba(255,255,255,0.55)", fontFamily: "'Rajdhani', sans-serif" }}>
+          <div className="mb-3">
+            <div className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-[0.18em]"
+              style={{ color: "rgba(240,180,41,0.72)" }}>
+              <span>{pendingStageLabel ?? "Processing request"}</span>
+              <span>{Math.round(pendingProgress)}%</span>
+            </div>
+            <div className="mb-2 grid gap-1 text-[11px]"
+              style={{ color: "rgba(255,255,255,0.56)" }}>
+              <span>{pendingMessage ? "✅ Wallet request started" : "• Wallet request started"}</span>
+              <span>{approveTxHash || buyTxHash ? "✅ Transaction signed" : "⏳ Waiting for wallet confirmation..."}</span>
+              <span>{isConfirmingChain ? "⏳ Confirming on BNB Chain..." : "• Confirming on BNB Chain"}</span>
+            </div>
+            <p className="mb-2 text-[11px]"
+              style={{ color: "rgba(255,255,255,0.42)" }}>
+              This usually takes 1-2 minutes.
+            </p>
+            <p className="mb-2 rounded-md px-2 py-1 text-[11px]"
+              style={{ background: "rgba(239,68,68,0.08)", color: "rgba(248,113,113,0.9)" }}>
+              Keep this page open. Closing it won&apos;t cancel your transaction.
+            </p>
+            <div className="h-2 overflow-hidden rounded-full"
+              style={{ background: "rgba(255,255,255,0.08)" }}>
+              <div
+                className="h-full rounded-full animate-pulse transition-[width] duration-700 ease-out"
+                style={{
+                  width: `${pendingProgress}%`,
+                  background: "linear-gradient(90deg, rgba(240,180,41,0.55) 0%, rgba(240,180,41,0.95) 55%, rgba(46,216,163,0.9) 100%)",
+                  boxShadow: "0 0 18px rgba(240,180,41,0.3)",
+                }}
+              />
+            </div>
+          </div>
           {pendingMessage}
+          {showSupportLink && (
+            <a
+              href={`mailto:${SUPPORT_EMAIL}`}
+              className="mt-3 block underline"
+              style={{ color: "rgba(240,180,41,0.84)" }}>
+              Taking longer than usual? Contact support
+            </a>
+          )}
+          {isUsingCustomWallet && canOpenWallet && (isWaitingForApproveWallet || isWaitingForBuyWallet) && (
+            <button
+              onClick={openCustomWalletApp}
+              className="mt-3 block w-full rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-200"
+              style={{
+                fontFamily: "'Rajdhani', sans-serif",
+                background: "rgba(240,180,41,0.1)",
+                border: "1px solid rgba(240,180,41,0.22)",
+                color: "#f0b429",
+              }}>
+              Open Wallet
+            </button>
+          )}
+          {isUsingCustomWallet && !canOpenWallet && (isWaitingForApproveWallet || isWaitingForBuyWallet) && (
+            <div className="mt-3 rounded-lg px-3 py-2 text-xs leading-5"
+              style={{
+                background: "rgba(240,180,41,0.08)",
+                border: "1px solid rgba(240,180,41,0.16)",
+                color: "rgba(255,255,255,0.6)",
+              }}>
+              On iPhone, keep ValorUp open after QR connection and wait for the request to appear there.
+            </div>
+          )}
         </div>
       )}
 
