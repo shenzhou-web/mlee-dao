@@ -46,36 +46,49 @@ export function Navbar() {
     return () => observers.forEach((observer) => observer.disconnect());
   }, []);
 
+  // Lock body scroll while the mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
   return (
     <header
       className="fixed left-0 right-0 top-0 z-50 transition-all duration-300"
       style={{
-        background: scrolled ? "rgba(10,10,10,0.9)" : "transparent",
-        backdropFilter: scrolled ? "blur(14px)" : "none",
-        borderBottom: scrolled ? "1px solid #1E1E1E" : "1px solid transparent",
+        // Solid dark panel at all times (not just on scroll) so the nav
+        // never sits directly on the page's black background with nothing
+        // behind it for contrast.
+        background: scrolled ? "#0A0A0A" : "rgba(10,10,10,0.92)",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+        borderBottom: "1px solid #1E1E1E",
       }}
     >
-      <div className="mx-auto flex h-[64px] max-w-[1440px] items-center justify-between px-5 md:px-10">
-        <Link href="/" className="flex items-center gap-3">
+      <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-5 md:h-[86px] md:px-10 lg:px-12">
+        <Link
+          href="/"
+          aria-label="MLEE DAO — Home"
+          className="flex items-center rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFD600]"
+        >
           <Image
-            src="/mdao-logo.png"
+            src="/mdao-logo-removebg.png"
             alt="MLEE DAO"
-            width={40}
-            height={40}
-            className="h-10 w-10 object-contain"
+            width={112}
+            height={112}
+            className="h-16 w-16 object-contain md:h-20 md:w-20 lg:h-24 lg:w-24"
             priority
           />
-          <span className="font-grotesk text-[13px] font-bold tracking-[2.5px] text-[#F5F5F0]">
-            MLEE DAO
-          </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-7 md:flex lg:gap-9">
           {PAGE_LINKS.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
-              className="relative font-ibm-mono text-[10px] tracking-[1.5px] text-[#666666] transition-colors hover:text-[#F5F5F0]"
+              className="relative rounded-sm font-ibm-mono text-[11px] font-bold tracking-[1.5px] text-[#D8D8D0] transition-colors hover:text-[#FFD600] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFD600]"
             >
               {label}
             </Link>
@@ -86,8 +99,9 @@ export function Navbar() {
               <button
                 key={section}
                 onClick={() => scrollToSection(section)}
-                className="relative bg-transparent font-ibm-mono text-[10px] tracking-[1.5px] transition-colors"
-                style={{ color: isActive ? "#FFD600" : "#666666" }}
+                className={`relative bg-transparent font-ibm-mono text-[11px] font-bold tracking-[1.5px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFD600] ${
+                  isActive ? "text-[#FFD600]" : "text-[#D8D8D0] hover:text-[#FFD600]"
+                }`}
               >
                 {label}
                 <span
@@ -99,10 +113,10 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-4 md:flex">
           <Link
             href="/dashboard"
-            className="font-ibm-mono text-[10px] tracking-[1.5px] text-[#666666] transition-colors hover:text-[#F5F5F0]"
+            className="rounded-sm font-ibm-mono text-[11px] font-bold tracking-[1.5px] text-[#D8D8D0] transition-colors hover:text-[#FFD600] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFD600]"
           >
             DASHBOARD
           </Link>
@@ -110,7 +124,7 @@ export function Navbar() {
             href={`https://bscscan.com/token/${TOKEN_CONTRACT_ADDRESS}`}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex h-9 items-center gap-2 bg-[#FFD600] px-4 font-grotesk text-[11px] font-bold tracking-[1.5px] text-[#0A0A0A] transition-colors hover:bg-[#F5F5F0]"
+            className="inline-flex h-9 items-center gap-2 bg-[#FFD600] px-4 font-grotesk text-[11px] font-bold tracking-[1.5px] text-[#0A0A0A] transition-colors hover:bg-[#F5F5F0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#FFD600]"
           >
             BSCSCAN
             <ArrowUpRight className="h-3.5 w-3.5" />
@@ -118,9 +132,10 @@ export function Navbar() {
         </div>
 
         <button
-          className="flex flex-col gap-[5px] p-2 md:hidden"
+          className="relative z-50 flex flex-col gap-[5px] rounded-sm p-2.5 md:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFD600]"
           onClick={() => setMenuOpen((open) => !open)}
           aria-label="Toggle menu"
+          aria-expanded={menuOpen}
         >
           <span
             className="block h-[2px] w-6 bg-[#F5F5F0] transition-transform"
@@ -137,9 +152,13 @@ export function Navbar() {
         </button>
       </div>
 
+      {/* Mobile menu */}
       <div
-        className="overflow-hidden border-[#1E1E1E] bg-[#0A0A0A]/95 transition-all duration-300 md:hidden"
-        style={{ maxHeight: menuOpen ? "520px" : "0px", borderBottomWidth: menuOpen ? 1 : 0 }}
+        className="overflow-y-auto border-[#1E1E1E] bg-[#0A0A0A]/98 transition-all duration-300 md:hidden"
+        style={{
+          maxHeight: menuOpen ? "calc(100vh - 76px)" : "0px",
+          borderBottomWidth: menuOpen ? 1 : 0,
+        }}
       >
         <nav className="flex flex-col px-5 py-4">
           {PAGE_LINKS.map(({ label, href }) => (
@@ -147,9 +166,9 @@ export function Navbar() {
               key={href}
               href={href}
               onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-3 border-b border-[#141414] py-4 text-left font-ibm-mono text-[12px] tracking-[2px] text-[#777777]"
+              className="flex items-center gap-3 border-b border-[#141414] py-4 text-left font-ibm-mono text-[12px] font-bold tracking-[2px] text-[#D8D8D0] transition-colors hover:text-[#FFD600]"
             >
-              <span className="h-1.5 w-1.5 bg-[#FFD600]" />
+              <span className="h-1.5 w-1.5 shrink-0 bg-[#FFD600]" />
               {label}
             </Link>
           ))}
@@ -160,26 +179,38 @@ export function Navbar() {
                 scrollToSection(section);
                 setMenuOpen(false);
               }}
-              className="flex items-center gap-3 border-b border-[#141414] py-4 text-left font-ibm-mono text-[12px] tracking-[2px] text-[#777777]"
+              className="flex items-center gap-3 border-b border-[#141414] py-4 text-left font-ibm-mono text-[12px] font-bold tracking-[2px] text-[#D8D8D0] transition-colors hover:text-[#FFD600]"
             >
-              <span className="h-1.5 w-1.5 bg-[#FFD600]" />
+              <span className="h-1.5 w-1.5 shrink-0 bg-[#FFD600]" />
               {label}
             </button>
           ))}
-          <div className="grid grid-cols-2 gap-3 pt-5">
+          <div className="grid grid-cols-2 gap-3 pt-5 pb-2">
             <Link
               href="/presale"
+              onClick={() => setMenuOpen(false)}
               className="bg-[#FFD600] px-4 py-3 text-center font-grotesk text-[11px] font-bold tracking-[1.5px] text-[#0A0A0A]"
             >
               PRESALE
             </Link>
             <Link
               href="/dashboard"
+              onClick={() => setMenuOpen(false)}
               className="border-2 border-[#2D2D2D] px-4 py-3 text-center font-ibm-mono text-[11px] tracking-[1.5px] text-[#F5F5F0]"
             >
               DASHBOARD
             </Link>
           </div>
+          <a
+            href={`https://bscscan.com/token/${TOKEN_CONTRACT_ADDRESS}`}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => setMenuOpen(false)}
+            className="mt-3 inline-flex items-center justify-center gap-2 border-2 border-[#2D2D2D] px-4 py-3 font-ibm-mono text-[11px] tracking-[1.5px] text-[#F5F5F0]"
+          >
+            VIEW ON BSCSCAN
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </a>
         </nav>
       </div>
     </header>

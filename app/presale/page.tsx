@@ -1,29 +1,23 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { PresaleCountdown } from "@/components/presale/countdown"
-import { PresaleStats } from "@/components/presale/stats"
-import { PresaleProgress } from "@/components/presale/progress"
-import { BuyTokens } from "@/components/presale/buy-tokens"
+import { useEffect, useState } from "react"
 import { VestingSchedule } from "@/components/presale/vesting"
-import { PricingPhases } from "@/components/presale/phases"
-import { PresaleFeatures } from "@/components/presale/features"
 import { ConnectWalletButton } from "@/components/presale/connect-wallet-button"
-import { usePresaleData } from "@/hooks/usePresaleData"
-import { CONTRACTS } from "@/lib/contracts"
 import Image from "next/image";
 import Link from "next/link";
 
 /* ─── Ticker data ─── */
 const TICKER_ITEMS = [
-  "⚡ MDAO TOKEN PRESALE",
-  "🔥 CURRENT PRICE UPDATES ON-CHAIN",
-  "📊 HARD CAP: 200,000,000 MDAO",
-  "🔒 LINEAR VESTING — 8 MONTHS",
+  "MDAO PRESALE OFFICIALLY ENDED",
+  "VESTING START: 2026-06-27 01:00:00 UTC",
+  "CLAIM VESTED MDAO FROM THIS PAGE",
+  "LINEAR VESTING — 8 MONTHS",
   "🏛 DECENTRALIZED GOVERNANCE",
   "🚀 BUILT FOR LONG-TERM HOLDERS",
   "🔎 VERIFIED ON BSC",
 ]
+
+const VESTING_START_LABEL = "2026-06-27 01:00:00 UTC"
 
 /* ─── Background orbs ─── */
 function BackgroundOrbs() {
@@ -187,18 +181,6 @@ function TickerTape() {
 
 /* ─── Hero Section ─── */
 function HeroSection() {
-  const { priceDisplay, hardCap, isLoading, phase, phase1Start, presaleEndTimestamp } = usePresaleData()
-  const now = Date.now() / 1000
-  const hasStarted = phase1Start > 0 && now >= phase1Start
-  const hasEnded = presaleEndTimestamp > 0 && now >= presaleEndTimestamp
-  const phaseTag = hasEnded
-    ? "Presale Ended"
-    : hasStarted
-      ? `Phase ${phase || 1} Now Live — Limited Spots`
-      : "Phase 1 Starting Soon"
-  const priceText = isLoading ? "—" : priceDisplay
-  const hardCapText = isLoading ? "—" : `${hardCap.toFixed(0)} MDAO`
-
   return (
     <section className="relative pt-28 pb-12 px-4 sm:px-6 text-center">
       {/* Tag line */}
@@ -209,12 +191,11 @@ function HeroSection() {
           border: "1px solid rgba(240,180,41,0.2)",
         }}
       >
-        <span className="text-xs animate-float" style={{ display: "inline-block" }}>🔥</span>
         <span
           className="text-xs font-bold uppercase tracking-widest"
           style={{ color: "rgba(240,180,41,0.9)", fontFamily: "'Rajdhani', sans-serif" }}
         >
-          {phaseTag}
+          Presale Officially Ended
         </span>
       </div>
 
@@ -247,7 +228,7 @@ function HeroSection() {
             filter: "drop-shadow(0 0 30px rgba(240,180,41,0.3))",
           }}
         >
-          PRESALE
+          VESTING CLAIM
         </h2>
       </div>
 
@@ -263,7 +244,8 @@ function HeroSection() {
           animationFillMode: "forwards",
         }}
       >
-        Join the future of decentralized gaming. Secure your MDAO tokens at the current presale price before the window closes.
+        The MDAO presale has officially ended. Vesting starts on {VESTING_START_LABEL};
+        connect your wallet here to view your allocation and claim vested MDAO when available.
       </p>
 
       {/* Hero CTA Buttons */}
@@ -273,11 +255,11 @@ function HeroSection() {
       >
         <ConnectWalletButton size="lg" />
         <a
-          href="#buy"
+          href="#vesting"
           className="btn-outline-gold inline-flex items-center gap-2 px-8 py-5 rounded-xl font-bold uppercase tracking-wider"
           style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.15em", fontSize: "1rem" }}
         >
-          📊 View Presale Details
+          View Vesting Claim
         </a>
       </div>
 
@@ -287,10 +269,10 @@ function HeroSection() {
         style={{ animationDelay: "500ms", animationFillMode: "forwards" }}
       >
         {[
-          { label: "Token Price", value: priceText },
-          { label: "Hard Cap", value: hardCapText },
-          { label: "Presale Duration", value: "90 Days" },
-          { label: "Audit", value: "TBA" },
+          { label: "Presale Status", value: "Ended" },
+          { label: "Vesting Start", value: "2026-06-27" },
+          { label: "Start Time", value: "01:00 UTC" },
+          { label: "Claim Type", value: "Vesting" },
         ].map((s) => (
           <div key={s.label} className="text-center">
             <div
@@ -313,16 +295,9 @@ function HeroSection() {
         ))}
       </div>
 
-      <div className="text-center text-xs animate-fade-in-up opacity-0" style={{ animationDelay: "600ms", animationFillMode: "forwards" }}>
-        <a
-          href={`https://bscscan.com/address/${CONTRACTS.PRESALE}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition"
-        >
-          View presale contract on BscScan ↗
-        </a>
-      </div>
+      <p className="text-center text-xs text-gray-400 animate-fade-in-up opacity-0" style={{ animationDelay: "600ms", animationFillMode: "forwards" }}>
+        Buying is closed. This page is now for presale vesting and claims.
+      </p>
     </section>
   )
 }
@@ -336,16 +311,16 @@ function FAQ() {
       a: "MDAO is the governance token for our decentralized gaming ecosystem. Holders can vote on protocol decisions and access staking utilities as they go live.",
     },
     {
-      q: "When does the presale start?",
-      a: "The presale start time is shown in the countdown above. Phase 1 offers the best pricing at $0.01 per MDAO.",
+      q: "Is the presale still open?",
+      a: "No. The MDAO presale has officially ended, and buying is no longer available on this page.",
     },
     {
-      q: "How do I participate?",
-      a: "Connect your Web3 wallet (MetaMask, WalletConnect, etc.), enter a USDT amount within the limits shown, approve USDT spending, then click Buy Tokens.",
+      q: "How do I claim my presale MDAO?",
+      a: "Connect the wallet used for the presale, review your vesting allocation, and use the claim button when vested tokens are available.",
     },
     {
-      q: "What is the vesting schedule?",
-      a: "20% is released at TGE (Token Generation Event), then 10% every month for 8 months until 100% is released.",
+      q: "When does vesting start?",
+      a: `Vesting starts on ${VESTING_START_LABEL}. After vesting starts, available tokens can be claimed from the vesting panel above.`,
     },
     {
       q: "Is there an audit?",
@@ -432,60 +407,66 @@ export default function PresalePage() {
         {/* ── Hero ── */}
         <HeroSection />
 
-        {/* ── Countdown + Stats + Progress ── */}
-        <section id="buy" className="px-4 sm:px-6 pb-16">
-          <div className="max-w-6xl 2xl:max-w-[1400px] mx-auto space-y-6">
-            {/* Countdown card */}
+        {/* ── Vesting Claim ── */}
+        <section id="vesting" className="px-4 sm:px-6 pb-16">
+          <div className="max-w-6xl 2xl:max-w-[1400px] mx-auto grid gap-5 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
             <div
-              className="rounded-2xl p-8 sm:p-10 animate-pulse-gold"
+              className="rounded-2xl p-6 sm:p-8 space-y-5"
               style={{
-                background: "rgba(10,14,20,0.85)",
+                background: "rgba(10,14,20,0.9)",
                 border: "1px solid rgba(240,180,41,0.2)",
                 backdropFilter: "blur(20px)",
               }}
             >
-              <PresaleCountdown />
+              <p className="text-xs uppercase tracking-widest font-semibold" style={{ color: "rgba(240,180,41,0.65)", fontFamily: "'Rajdhani', sans-serif" }}>
+                Presale Closed
+              </p>
+              <h2
+                style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: "clamp(2.4rem, 6vw, 4.5rem)",
+                  color: "white",
+                  letterSpacing: "0.05em",
+                  lineHeight: 1,
+                }}
+              >
+                Vesting Will Start
+              </h2>
+              <div
+                className="rounded-xl p-5"
+                style={{ background: "rgba(240,180,41,0.08)", border: "1px solid rgba(240,180,41,0.22)" }}
+              >
+                <p className="text-xs uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.45)", fontFamily: "'Rajdhani', sans-serif" }}>
+                  Vesting Start
+                </p>
+                <p
+                  style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    color: "#f0b429",
+                    fontSize: "clamp(1rem, 4vw, 1.45rem)",
+                    lineHeight: 1.5,
+                    overflowWrap: "anywhere",
+                  }}
+                >
+                  {VESTING_START_LABEL}
+                </p>
+              </div>
+              <p
+                className="text-sm sm:text-base"
+                style={{ color: "rgba(255,255,255,0.5)", fontFamily: "'Rajdhani', sans-serif", lineHeight: 1.7 }}
+              >
+                Buying has ended. Connect the same wallet you used for the presale to see your allocation,
+                claimable amount, claimed balance, and next unlock information.
+              </p>
+              <ConnectWalletButton size="lg" />
             </div>
 
-            {/* Stats */}
-            <PresaleStats />
-
-            {/* Progress */}
-            <div
-              className="rounded-2xl p-6"
-              style={{
-                background: "rgba(10,14,20,0.8)",
-                border: "1px solid rgba(240,180,41,0.12)",
-                backdropFilter: "blur(10px)",
-              }}
-            >
-              <PresaleProgress />
-            </div>
-
-            {/* Buy + Vesting side by side */}
-            <div className="grid lg:grid-cols-2 gap-5">
-              <BuyTokens />
-              <VestingSchedule />
-            </div>
+            <VestingSchedule />
           </div>
         </section>
 
         {/* ── Divider ── */}
         <div className="divider-gold mx-6 mb-16" />
-
-        {/* ── Pricing Phases ── */}
-        <section id="phases" className="px-4 sm:px-6 pb-20">
-          <div className="max-w-6xl 2xl:max-w-[1400px] mx-auto">
-            <PricingPhases />
-          </div>
-        </section>
-
-        {/* ── Features ── */}
-        <section id="about" className="px-4 sm:px-6 pb-20">
-          <div className="max-w-6xl 2xl:max-w-[1400px] mx-auto">
-            <PresaleFeatures />
-          </div>
-        </section>
 
         {/* ── FAQ ── */}
         <section className="px-4 sm:px-6 pb-20">
@@ -509,7 +490,7 @@ export default function PresalePage() {
               <div className="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 rounded-br-3xl" style={{ borderColor: "rgba(240,180,41,0.4)" }} />
 
               <p className="text-xs uppercase tracking-widest font-semibold" style={{ color: "rgba(240,180,41,0.6)", fontFamily: "'Rajdhani', sans-serif" }}>
-                Don&apos;t Miss Out
+                Vesting Claim
               </p>
               <h2
                 style={{
@@ -520,13 +501,13 @@ export default function PresalePage() {
                   lineHeight: 1,
                 }}
               >
-                Ready to Join the Presale?
+                Ready to Claim Vested MDAO?
               </h2>
               <p
                 className="text-base max-w-md mx-auto"
                 style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'Rajdhani', sans-serif", lineHeight: 1.7 }}
               >
-                Connect your wallet and secure MDAO tokens at Phase 1 pricing. The early bird advantage won&apos;t last forever.
+                Connect your wallet and use the vesting panel to claim available MDAO after the vesting schedule begins.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
@@ -534,7 +515,7 @@ export default function PresalePage() {
               </div>
 
               <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)", fontFamily: "'Rajdhani', sans-serif" }}>
-                BEP-20 USDT only &nbsp;·&nbsp; No KYC required &nbsp;·&nbsp; Fully on-chain
+                Presale ended &nbsp;·&nbsp; Vesting starts {VESTING_START_LABEL} &nbsp;·&nbsp; Fully on-chain
               </p>
             </div>
           </div>

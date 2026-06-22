@@ -2,50 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ExternalLink } from "lucide-react";
-import { useEffect, useState } from "react";
-import { usePresaleData } from "@/hooks/usePresaleData";
-import { CONTRACTS } from "@/lib/contracts";
-
-function getTimingLabel({
-  hasEnded,
-  hasStarted,
-  daysLeft,
-}: {
-  hasEnded: boolean;
-  hasStarted: boolean;
-  daysLeft: number;
-}) {
-  if (hasEnded) return "Presale ended";
-  if (hasStarted) return `Presale ends in ${daysLeft} days`;
-  return `Phase 1 starts in ${daysLeft} days`;
-}
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 export function Hero() {
-  const [now, setNow] = useState(0);
-  const { priceDisplay, progress, presaleEndTimestamp, phase1Start, phase, isLoading } =
-    usePresaleData();
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setNow(Date.now() / 1000);
-    }, 1000);
-
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const hasStarted = phase1Start > 0 && now >= phase1Start;
-  const hasEnded = presaleEndTimestamp > 0 && now >= presaleEndTimestamp;
-  const targetTime = hasStarted ? presaleEndTimestamp : phase1Start;
-  const daysLeft = targetTime > 0 ? Math.max(0, Math.ceil((targetTime - now) / 86400)) : 0;
-  const phaseBadge = hasEnded
-    ? "PRESALE ENDED"
-    : hasStarted
-      ? `PHASE ${phase || 1} LIVE`
-      : "PHASE 1 QUEUED";
-  const timingLabel = getTimingLabel({ hasEnded, hasStarted, daysLeft });
-  const safeProgress = Number.isFinite(progress) ? Math.max(progress, 0.5) : 0.5;
-
   return (
     <section className="relative overflow-hidden bg-[#0A0A0A] px-5 pt-[104px] md:px-10 md:pt-[120px]">
       <div className="landing-grid-motion absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:64px_64px]" />
@@ -92,18 +51,16 @@ export function Hero() {
               href="/presale"
               className="inline-flex h-14 items-center justify-center gap-3 bg-[#FFD600] px-7 font-grotesk text-[12px] font-bold tracking-[2px] text-[#0A0A0A] transition-colors hover:bg-[#F5F5F0]"
             >
-              JOIN PRESALE
+              CLAIM PRESALE MDAO
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <a
-              href={`https://bscscan.com/address/${CONTRACTS.PRESALE}`}
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              href="/partnership"
               className="inline-flex h-14 items-center justify-center gap-3 border-2 border-[#2D2D2D] px-7 font-ibm-mono text-[12px] tracking-[2px] text-[#888888] transition-colors hover:border-[#FFD600] hover:text-[#F5F5F0]"
             >
-              PRESALE CONTRACT
-              <ExternalLink className="h-4 w-4" />
-            </a>
+              PARTNERSHIP PROGRAM
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
 
           <div data-reveal="up" data-reveal-delay="340" className="mt-8 grid max-w-[760px] grid-cols-1 border-2 border-[#2D2D2D] sm:grid-cols-3">
@@ -131,10 +88,10 @@ export function Hero() {
           <div className="landing-scanline pointer-events-none absolute left-0 right-0 top-0 h-8 bg-[#FFD600]/5" />
           <div className="flex h-10 items-center justify-between border-b-2 border-[#2D2D2D] bg-[#141414] px-4">
             <span className="font-ibm-mono text-[10px] font-bold tracking-[2px] text-[#FFD600]">
-              PRESALE STATUS
+              MDAO ACCESS
             </span>
             <span className="font-ibm-mono text-[10px] tracking-[1.5px] text-[#555555]">
-              LIVE DATA
+              CLAIM + PARTNER
             </span>
           </div>
 
@@ -144,65 +101,55 @@ export function Hero() {
                 <div className="flex items-center gap-2">
                   <span className="landing-pulse-dot h-2.5 w-2.5 bg-[#4ADE80]" />
                   <span className="font-ibm-mono text-[11px] font-bold tracking-[2px] text-[#4ADE80]">
-                    {phaseBadge}
+                    PRESALE CLAIM OPEN
                   </span>
                 </div>
-                <div className="mt-2 font-ibm-mono text-[11px] text-[#666666]">
-                  {isLoading ? "Syncing chain data" : timingLabel}
+                <div className="mt-2 max-w-[460px] font-ibm-mono text-[11px] leading-5 text-[#666666]">
+                  Claim your presale MDAO from the dashboard, or explore the partnership program for onboarding details.
                 </div>
               </div>
               <CheckCircle2 className="h-8 w-8 text-[#FFD600]" />
             </div>
 
-            <div className="grid grid-cols-2 border-b border-[#2D2D2D]">
-              <div className="border-r border-[#2D2D2D] py-6 pr-4">
-                <div className="font-ibm-mono text-[10px] tracking-[2px] text-[#555555]">
-                  CURRENT PRICE
-                </div>
-                <div className="mt-2 font-grotesk text-[42px] font-bold leading-none text-[#FFD600]">
-                  {isLoading ? "--" : priceDisplay}
-                </div>
-              </div>
-              <div className="py-6 pl-4">
-                <div className="font-ibm-mono text-[10px] tracking-[2px] text-[#555555]">
-                  PROGRESS
-                </div>
-                <div className="mt-2 font-grotesk text-[42px] font-bold leading-none text-[#F5F5F0]">
-                  {isLoading ? "--" : `${progress.toFixed(2)}%`}
-                </div>
-              </div>
-            </div>
-
-            <div className="py-6">
-              <div className="mb-3 flex justify-between font-ibm-mono text-[10px] tracking-[2px] text-[#666666]">
-                <span>PRESALE FILL</span>
-                <span>{isLoading ? "--" : `${progress.toFixed(2)}%`}</span>
-              </div>
-              <div className="h-3 border border-[#2D2D2D] bg-[#0A0A0A]">
+            <div className="grid grid-cols-1 border-b border-[#2D2D2D] sm:grid-cols-2">
+              {[
+                ["CLAIM", "PRESALE MDAO", "Open the dashboard to connect your wallet and claim available MDAO."],
+                ["PARTNER", "PARTNERSHIP OPTION", "Go to the partnership page to review the program and onboarding flow."],
+              ].map(([eyebrow, title, body], index) => (
                 <div
-                  className="landing-progress h-full bg-[#FFD600]"
-                  style={{ width: `${Math.min(safeProgress, 100)}%` }}
-                />
-              </div>
+                  key={title}
+                  className={`py-6 ${index > 0 ? "border-t border-[#2D2D2D] sm:border-l sm:border-t-0 sm:pl-5" : "sm:pr-5"}`}
+                >
+                  <div className="font-ibm-mono text-[10px] tracking-[2px] text-[#555555]">
+                    {eyebrow}
+                  </div>
+                  <div className="mt-3 font-grotesk text-[clamp(30px,6vw,42px)] font-bold leading-none text-[#FFD600]">
+                    {title}
+                  </div>
+                  <p className="mt-3 font-ibm-mono text-[11px] leading-5 tracking-normal text-[#666666]">
+                    {body}
+                  </p>
+                </div>
+              ))}
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 pt-6 sm:grid-cols-2">
               <Link
                 href="/presale"
                 className="inline-flex h-12 items-center justify-center bg-[#FFD600] font-grotesk text-[12px] font-bold tracking-[2px] text-[#0A0A0A]"
               >
-                BUY MDAO
+                CLAIM PRESALE MDAO
               </Link>
               <Link
                 href="/partnership"
                 className="inline-flex h-12 items-center justify-center border-2 border-[#2D2D2D] font-ibm-mono text-[11px] tracking-[2px] text-[#F5F5F0] transition-colors hover:border-[#FFD600]"
               >
-                PARTNER
+                PARTNERSHIP OPTION
               </Link>
             </div>
 
             <p className="mt-5 font-ibm-mono text-[10px] leading-5 tracking-[1px] text-[#555555]">
-              BEP-20 USDT only // No KYC required // Transparent presale contract
+              Presale claim dashboard // Partnership page available // BNB Smart Chain
             </p>
           </div>
         </div>

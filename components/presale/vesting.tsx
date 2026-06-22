@@ -6,12 +6,44 @@ import { usePresaleData } from "@/hooks/usePresaleData"
 import { getTxLink } from "@/lib/utils"
 import { useEffect, useState } from "react"
 
+const VESTING_START_LABEL = "2026-06-27 01:00:00 UTC"
+
 const UNLOCK_SCHEDULE = [
   { event: "TGE (Token Generation Event)", percent: "20%", color: "#f0b429" },
   { event: "Month 1",   percent: "10%",      color: "#f0b429" },
   { event: "Month 2",   percent: "10%",      color: "#e8a820" },
   { event: "Months 3–8", percent: "10% each", color: "#c88d14" },
 ]
+
+function VestingRow({
+  label,
+  value,
+  highlight,
+  isLoading,
+}: {
+  label: string
+  value: string
+  highlight?: boolean
+  isLoading: boolean
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-xl px-5 py-4"
+      style={{ background: "rgba(5,7,10,0.7)", border: "1px solid rgba(240,180,41,0.08)" }}>
+      <span className="text-sm" style={{ color: "rgba(255,255,255,0.6)", fontFamily: "'Rajdhani', sans-serif", fontWeight: 500 }}>
+        {label}
+      </span>
+      <span className="text-right text-sm font-bold"
+        style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          color: highlight ? "#f0b429" : "rgba(255,255,255,0.8)",
+          textShadow: highlight ? "0 0 10px rgba(240,180,41,0.4)" : "none",
+          opacity: isLoading ? 0.4 : 1,
+        }}>
+        {isLoading ? "..." : value}
+      </span>
+    </div>
+  )
+}
 
 export function VestingSchedule() {
   const { isConnected, totalAllocatedDisplay, claimedDisplay, claimableNowDisplay,
@@ -22,28 +54,9 @@ export function VestingSchedule() {
   const displayLoading = !mounted || isLoading
 
   useEffect(() => {
-    setMounted(true)
+    const timeout = window.setTimeout(() => setMounted(true), 0)
+    return () => window.clearTimeout(timeout)
   }, [])
-
-  function VestingRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
-    return (
-      <div className="flex justify-between items-center px-5 py-4 rounded-xl"
-        style={{ background: "rgba(5,7,10,0.7)", border: "1px solid rgba(240,180,41,0.08)" }}>
-        <span className="text-sm" style={{ color: "rgba(255,255,255,0.6)", fontFamily: "'Rajdhani', sans-serif", fontWeight: 500 }}>
-          {label}
-        </span>
-        <span className="text-sm font-bold"
-          style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            color: highlight ? "#f0b429" : "rgba(255,255,255,0.8)",
-            textShadow: highlight ? "0 0 10px rgba(240,180,41,0.4)" : "none",
-            opacity: displayLoading ? 0.4 : 1,
-          }}>
-          {displayLoading ? "..." : value}
-        </span>
-      </div>
-    )
-  }
 
   return (
     <div className="rounded-2xl p-6 sm:p-8 space-y-6"
@@ -55,10 +68,10 @@ export function VestingSchedule() {
           style={{ background: "rgba(240,180,41,0.1)", border: "1px solid rgba(240,180,41,0.2)" }}>📊</div>
         <div>
           <h3 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.6rem", color: "#f0b429", letterSpacing: "0.05em" }}>
-            Vesting Schedule
+            Presale Vesting Claim
           </h3>
           <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'Rajdhani', sans-serif" }}>
-            {isVestingStarted ? "Vesting is live" : "Starts after TGE event"}
+            {isVestingStarted ? "Vesting is live" : `Vesting starts ${VESTING_START_LABEL}`}
           </p>
         </div>
       </div>
@@ -66,19 +79,19 @@ export function VestingSchedule() {
       {/* Vesting data */}
       {mounted && isConnected ? (
         <div className="space-y-2">
-          <VestingRow label="Total Allocated" value={`${totalAllocatedDisplay} MDAO`} />
-          <VestingRow label="Claimable Now"   value={`${claimableNowDisplay} MDAO`} highlight />
-          <VestingRow label="Already Claimed" value={`${claimedDisplay} MDAO`} />
-          <VestingRow label="Remaining Locked" value={`${remainingLockedDisplay} MDAO`} />
+          <VestingRow label="Total Allocated" value={`${totalAllocatedDisplay} MDAO`} isLoading={displayLoading} />
+          <VestingRow label="Claimable Now" value={`${claimableNowDisplay} MDAO`} highlight isLoading={displayLoading} />
+          <VestingRow label="Already Claimed" value={`${claimedDisplay} MDAO`} isLoading={displayLoading} />
+          <VestingRow label="Remaining Locked" value={`${remainingLockedDisplay} MDAO`} isLoading={displayLoading} />
           {nextUnlockTimeDisplay !== "—" && (
-            <VestingRow label="Next Unlock" value={nextUnlockTimeDisplay} />
+            <VestingRow label="Next Unlock" value={nextUnlockTimeDisplay} isLoading={displayLoading} />
           )}
         </div>
       ) : (
         <div className="space-y-2">
-          <VestingRow label="Total Allocated"  value="Connect wallet" />
-          <VestingRow label="Claimable Now"    value="Connect wallet" highlight />
-          <VestingRow label="Already Claimed"  value="Connect wallet" />
+          <VestingRow label="Total Allocated" value="Connect wallet" isLoading={displayLoading} />
+          <VestingRow label="Claimable Now" value="Connect wallet" highlight isLoading={displayLoading} />
+          <VestingRow label="Already Claimed" value="Connect wallet" isLoading={displayLoading} />
         </div>
       )}
 
@@ -103,7 +116,7 @@ export function VestingSchedule() {
       ) : (
         <button onClick={claim}
           disabled={!mounted || !isConnected || !hasClaimable || !isVestingStarted || isClaiming}
-          className="w-full rounded-xl py-4 font-bold uppercase tracking-widest transition-all duration-300"
+          className="min-h-14 w-full rounded-xl px-3 py-4 font-bold uppercase leading-5 tracking-widest transition-all duration-300"
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
             fontSize: "1.1rem",
@@ -116,7 +129,7 @@ export function VestingSchedule() {
             cursor: hasClaimable && isVestingStarted ? "pointer" : "not-allowed",
             boxShadow: hasClaimable && isVestingStarted ? "0 4px 20px rgba(240,180,41,0.25)" : "none",
           }}>
-          {isClaiming ? "⏳ Claiming..." : !isVestingStarted ? "🔒 Vesting Not Started" : "🏛 Claim Tokens"}
+          {isClaiming ? "Claiming..." : !isVestingStarted ? `Vesting Starts ${VESTING_START_LABEL}` : "Claim Vested MDAO"}
         </button>
       )}
 
