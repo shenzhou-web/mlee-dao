@@ -5,6 +5,7 @@ import { Footer } from "@/components/landing/Footer";
 import { Hero } from "@/components/landing/Hero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { LandingAnimations } from "@/components/landing/LandingAnimations";
+import { MdaoCoin } from "@/components/landing/MdaoCoin";
 import { Navbar } from "@/components/landing/Navbar";
 import { PixelDivider } from "@/components/landing/PixelDivider";
 import { Roadmap } from "@/components/landing/Roadmap";
@@ -19,6 +20,7 @@ export default function Home() {
       <Hero />
       <PixelDivider />
       <ContractProof />
+      <MdaoCoin />
       <About />
       <HowItWorks />
       <Stats />
