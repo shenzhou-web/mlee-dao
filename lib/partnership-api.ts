@@ -61,8 +61,8 @@ export interface PublicPartnershipCompany {
   walletAddress: string | null;
 }
 
-// const API_BASE = "https://api.iealiance.com/api";
-const API_BASE = "http://localhost:5001/api";
+const API_BASE = "https://api.iealiance.com/api";
+// const API_BASE = "http://localhost:5001/api";
 const STORAGE_KEY = "mdao.partnership.applications";
 
 function getApiUrl(path: string) {
