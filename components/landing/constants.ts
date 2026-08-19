@@ -13,7 +13,7 @@ export const NAV_LINKS = [
 ] as const;
 
 export const PAGE_LINKS = [
-  { label: "PRESALE", href: "/presale" },
+  { label: "SWAP", href: "/swap" },
   { label: "PARTNERSHIP", href: "/partnership" },
 ] as const;
 

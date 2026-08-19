@@ -50,7 +50,7 @@ export type VerifyIdResult =
   | { status: "used" }
   | { status: "refNum" };
 
-export type PublicPartnershipCompany = {
+export interface PublicPartnershipCompany {
   id: string;
   companyName: string;
   country: string;
@@ -58,9 +58,11 @@ export type PublicPartnershipCompany = {
   description: string;
   lockPeriod: number | null;
   joinedAt: string | null;
-};
+  walletAddress: string | null;
+}
 
-const API_BASE = "https://api.iealiance.com/api";
+// const API_BASE = "https://api.iealiance.com/api";
+const API_BASE = "http://localhost:5001/api";
 const STORAGE_KEY = "mdao.partnership.applications";
 
 function getApiUrl(path: string) {
@@ -148,6 +150,7 @@ function sanitizePublicCompany(
     description: toSafeString(record.companyDescription).slice(0, 220),
     lockPeriod: toSafeNumber(record.lockPeriod),
     joinedAt: toSafeString(record.createdAt) || null,
+    walletAddress: toSafeString(record.walletAddress) || null,
   };
 }
 

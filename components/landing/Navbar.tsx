@@ -187,11 +187,11 @@ export function Navbar() {
           ))}
           <div className="grid grid-cols-2 gap-3 pt-5 pb-2">
             <Link
-              href="/presale"
+              href="/swap"
               onClick={() => setMenuOpen(false)}
               className="bg-[#FFD600] px-4 py-3 text-center font-grotesk text-[11px] font-bold tracking-[1.5px] text-[#0A0A0A]"
             >
-              PRESALE
+              SWAP
             </Link>
             <Link
               href="/dashboard"

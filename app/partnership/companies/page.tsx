@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Building2, CalendarDays, Globe2, Lock } from "lucide-react";
+import { ArrowLeft, Building2, CalendarDays, Check, Copy, Globe2, Lock, QrCode, X } from "lucide-react";
 import { SiteFooter } from "@/components/layout/site-footer";
 import {
   fetchPublicPartnershipCompanies,
@@ -28,6 +28,16 @@ const LOCK_PERIOD_MAP: Record<number, string> = {
 function formatLockPeriod(value: number | null | undefined): string | null {
   if (value == null) return null;
   return LOCK_PERIOD_MAP[value] ?? `${value} months`;
+}
+
+function shortenWallet(address: string | null | undefined, head = 6, tail = 4): string {
+  if (!address) return "—";
+  if (address.length <= head + tail + 3) return address;
+  return `${address.slice(0, head)}…${address.slice(-tail)}`;
+}
+
+function qrCodeUrl(data: string, size = 220) {
+  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&margin=8&data=${encodeURIComponent(data)}`;
 }
 
 /* ── Sub-components ── */
@@ -60,6 +70,142 @@ function MetaRow({
   );
 }
 
+/* Wallet row: shortened address + copy button + QR trigger */
+function WalletRow({ address }: { address: string }) {
+  const [copied, setCopied] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
+
+  async function handleCopy(e: React.MouseEvent) {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(address);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      // clipboard unavailable — silently ignore
+    }
+  }
+
+  return (
+    <>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
+          <Building2 size={13} style={{ opacity: 0 }} />
+        </span>
+      </div>
+      <div
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          marginTop: 4, padding: "10px 12px", borderRadius: 10,
+          background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)",
+        }}
+      >
+        <span
+          title={address}
+          style={{
+            fontFamily: "var(--font-mono, monospace)", fontSize: 12,
+            color: "rgba(255,255,255,0.6)", letterSpacing: "0.01em",
+          }}
+        >
+          {shortenWallet(address)}
+        </span>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <button
+            type="button"
+            onClick={handleCopy}
+            aria-label="Copy wallet address"
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center",
+              width: 26, height: 26, borderRadius: 7, cursor: "pointer",
+              background: copied ? "rgba(46,216,163,0.12)" : "rgba(255,255,255,0.04)",
+              border: copied ? "1px solid rgba(46,216,163,0.3)" : "1px solid rgba(255,255,255,0.08)",
+              transition: "all 0.2s ease",
+            }}
+          >
+            {copied
+              ? <Check size={12} style={{ color: "var(--jade)" }} />
+              : <Copy size={12} style={{ color: "rgba(255,255,255,0.4)" }} />}
+          </button>
+
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setQrOpen(true); }}
+            aria-label="Show wallet QR code"
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center",
+              width: 26, height: 26, borderRadius: 7, cursor: "pointer",
+              background: "rgba(240,180,41,0.06)", border: "1px solid rgba(240,180,41,0.2)",
+              transition: "all 0.2s ease",
+            }}
+          >
+            <QrCode size={12} style={{ color: "var(--gold)" }} />
+          </button>
+        </div>
+      </div>
+
+      {qrOpen && (
+        <div
+          onClick={() => setQrOpen(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 100,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            background: "rgba(4,6,10,0.75)", backdropFilter: "blur(6px)",
+            padding: 24,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "min(320px, 100%)", borderRadius: 20, padding: 28,
+              background: "linear-gradient(160deg, rgba(20,25,35,1) 0%, rgba(10,13,20,1) 100%)",
+              border: "1px solid rgba(240,180,41,0.25)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(240,180,41,0.06)",
+              textAlign: "center", position: "relative",
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setQrOpen(false)}
+              aria-label="Close"
+              style={{
+                position: "absolute", top: 14, right: 14,
+                width: 26, height: 26, borderRadius: 8, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <X size={13} style={{ color: "rgba(255,255,255,0.5)" }} />
+            </button>
+
+            <p style={{
+              fontSize: 10, fontWeight: 700, letterSpacing: "0.25em", textTransform: "uppercase",
+              color: "var(--gold)", margin: "0 0 18px",
+            }}>
+              Wallet Address
+            </p>
+
+            <div style={{
+              display: "inline-flex", padding: 14, borderRadius: 14,
+              background: "#ffffff", boxShadow: "0 0 0 1px rgba(240,180,41,0.2)",
+            }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={qrCodeUrl(address)} alt="Wallet address QR code" width={220} height={220} style={{ display: "block", borderRadius: 4 }} />
+            </div>
+
+            <p style={{
+              marginTop: 18, fontSize: 12, fontFamily: "var(--font-mono, monospace)",
+              color: "rgba(255,255,255,0.5)", wordBreak: "break-all", lineHeight: 1.6,
+            }}>
+              {address}
+            </p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 function SkeletonCard() {
   return (
     <div
@@ -78,6 +224,7 @@ function SkeletonCard() {
       <div style={{ marginTop: 18, paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
         <div style={{ height: 11, width: "50%", borderRadius: 6, background: "rgba(255,255,255,0.04)", marginBottom: 10 }} />
         <div style={{ height: 11, width: "45%", borderRadius: 6, background: "rgba(255,255,255,0.04)" }} />
+        <div style={{ height: 34, width: "100%", borderRadius: 10, background: "rgba(255,255,255,0.03)", marginTop: 12 }} />
       </div>
     </div>
   );
@@ -138,6 +285,7 @@ function CompanyCard({ company }: { company: PublicPartnershipCompany }) {
         {lockLabel && (
           <MetaRow icon={<Lock size={13} />} label="Lock period" value={lockLabel} valueColor="var(--jade)" />
         )}
+        {company.walletAddress && <WalletRow address={company.walletAddress} />}
       </div>
     </article>
   );
